@@ -6099,8 +6099,8 @@ EncoCoin核心钱包</translation>
         <translation>您必须在配置中指定一个主节点privkey。有关帮助，请参阅文档。</translation>
     </message>
     <message>
-        <source>(31472 could be used only on mainnet)</source>
-        <translation>(31472只可在网上使用)</translation>
+        <source>(43013 could be used only on mainnet)</source>
+        <translation>(43013只可在网上使用)</translation>
     </message>
     <message>
         <source>(default: %s)</source>
@@ -6111,8 +6111,8 @@ EncoCoin核心钱包</translation>
         <translation>(默认: 1)</translation>
     </message>
     <message>
-        <source>(must be 31472 for mainnet)</source>
-        <translation>(主网必须为31472)</translation>
+        <source>(must be 43013 for mainnet)</source>
+        <translation>(主网必须为43013)</translation>
     </message>
     <message>
         <source>Accept command line and JSON-RPC commands</source>

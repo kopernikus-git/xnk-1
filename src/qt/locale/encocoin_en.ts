@@ -8012,8 +8012,8 @@ EncoCoin Core Wallet</source>
     </message>
     <message>
         <location line="+3"/>
-        <source>(31472 could be used only on mainnet)</source>
-        <translation type="unfinished">(31472 could be used only on mainnet)</translation>
+        <source>(43013 could be used only on mainnet)</source>
+        <translation type="unfinished">(43013 could be used only on mainnet)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -8027,7 +8027,7 @@ EncoCoin Core Wallet</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>(must be 31472 for mainnet)</source>
+        <source>(must be 43013 for mainnet)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

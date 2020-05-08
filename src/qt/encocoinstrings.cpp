@@ -253,10 +253,10 @@ QT_TRANSLATE_NOOP("encocoin-core", ""
 QT_TRANSLATE_NOOP("encocoin-core", ""
 "You must specify a masternodeprivkey in the configuration. Please see "
 "documentation for help."),
-QT_TRANSLATE_NOOP("encocoin-core", "(31472 could be used only on mainnet)"),
+QT_TRANSLATE_NOOP("encocoin-core", "(43013 could be used only on mainnet)"),
 QT_TRANSLATE_NOOP("encocoin-core", "(default: %s)"),
 QT_TRANSLATE_NOOP("encocoin-core", "(default: 1)"),
-QT_TRANSLATE_NOOP("encocoin-core", "(must be 31472 for mainnet)"),
+QT_TRANSLATE_NOOP("encocoin-core", "(must be 43013 for mainnet)"),
 QT_TRANSLATE_NOOP("encocoin-core", "<category> can be:"),
 QT_TRANSLATE_NOOP("encocoin-core", "Accept command line and JSON-RPC commands"),
 QT_TRANSLATE_NOOP("encocoin-core", "Accept connections from outside (default: 1 if no -proxy or -connect)"),

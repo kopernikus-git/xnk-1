@@ -6453,8 +6453,8 @@ EncoCoin Core Wallet</translation>
         <translation>You must specify a masternodeprivkey in the configuration. Please see documentation for help.</translation>
     </message>
     <message>
-        <source>(31472 could be used only on mainnet)</source>
-        <translation>(31472 could be used only on mainnet)</translation>
+        <source>(43013 could be used only on mainnet)</source>
+        <translation>(43013 could be used only on mainnet)</translation>
     </message>
     <message>
         <source>(default: %s)</source>
@@ -6465,8 +6465,8 @@ EncoCoin Core Wallet</translation>
         <translation>(default: 1)</translation>
     </message>
     <message>
-        <source>(must be 31472 for mainnet)</source>
-        <translation>(must be 31472 for mainnet)</translation>
+        <source>(must be 43013 for mainnet)</source>
+        <translation>(must be 43013 for mainnet)</translation>
     </message>
     <message>
         <source>Accept command line and JSON-RPC commands</source>

@@ -6137,8 +6137,8 @@ EncoCoin Core Portemonnee</translation>
         <translation>Je moet een masternodeprivkey opgeven in de configuratie. Raadpleeg de documentatie voor hulp.</translation>
     </message>
     <message>
-        <source>(31472 could be used only on mainnet)</source>
-        <translation>(31472 kan alleen op mainnet worden gebruikt)</translation>
+        <source>(43013 could be used only on mainnet)</source>
+        <translation>(43013 kan alleen op mainnet worden gebruikt)</translation>
     </message>
     <message>
         <source>(default: %s)</source>
@@ -6149,8 +6149,8 @@ EncoCoin Core Portemonnee</translation>
         <translation>(standaard: 1)</translation>
     </message>
     <message>
-        <source>(must be 31472 for mainnet)</source>
-        <translation>(moet 31472 voor mainnet zijn)</translation>
+        <source>(must be 43013 for mainnet)</source>
+        <translation>(moet 43013 voor mainnet zijn)</translation>
     </message>
     <message>
         <source>Accept command line and JSON-RPC commands</source>

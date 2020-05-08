@@ -62,15 +62,15 @@ BOOST_AUTO_TEST_CASE(netbase_splithost)
     BOOST_CHECK(TestSplitHost("www.bitcoin.org:80", "www.bitcoin.org", 80));
     BOOST_CHECK(TestSplitHost("[www.bitcoin.org]:80", "www.bitcoin.org", 80));
     BOOST_CHECK(TestSplitHost("127.0.0.1", "127.0.0.1", -1));
-    BOOST_CHECK(TestSplitHost("127.0.0.1:31472", "127.0.0.1", 31472));
+    BOOST_CHECK(TestSplitHost("127.0.0.1:43013", "127.0.0.1", 43013));
     BOOST_CHECK(TestSplitHost("[127.0.0.1]", "127.0.0.1", -1));
-    BOOST_CHECK(TestSplitHost("[127.0.0.1]:31472", "127.0.0.1", 31472));
+    BOOST_CHECK(TestSplitHost("[127.0.0.1]:43013", "127.0.0.1", 43013));
     BOOST_CHECK(TestSplitHost("::ffff:127.0.0.1", "::ffff:127.0.0.1", -1));
-    BOOST_CHECK(TestSplitHost("[::ffff:127.0.0.1]:31472", "::ffff:127.0.0.1", 31472));
-    BOOST_CHECK(TestSplitHost("[::]:31472", "::", 31472));
-    BOOST_CHECK(TestSplitHost("::31472", "::31472", -1));
-    BOOST_CHECK(TestSplitHost(":31472", "", 31472));
-    BOOST_CHECK(TestSplitHost("[]:31472", "", 31472));
+    BOOST_CHECK(TestSplitHost("[::ffff:127.0.0.1]:43013", "::ffff:127.0.0.1", 43013));
+    BOOST_CHECK(TestSplitHost("[::]:43013", "::", 43013));
+    BOOST_CHECK(TestSplitHost("::43013", "::43013", -1));
+    BOOST_CHECK(TestSplitHost(":43013", "", 43013));
+    BOOST_CHECK(TestSplitHost("[]:43013", "", 43013));
     BOOST_CHECK(TestSplitHost("", "", -1));
 }
 
@@ -85,10 +85,10 @@ bool static TestParse(std::string src, std::string canon)
 BOOST_AUTO_TEST_CASE(netbase_lookupnumeric)
 {
     BOOST_CHECK(TestParse("127.0.0.1", "127.0.0.1:65535"));
-    BOOST_CHECK(TestParse("127.0.0.1:31472", "127.0.0.1:31472"));
+    BOOST_CHECK(TestParse("127.0.0.1:43013", "127.0.0.1:43013"));
     BOOST_CHECK(TestParse("::ffff:127.0.0.1", "127.0.0.1:65535"));
     BOOST_CHECK(TestParse("::", "[::]:65535"));
-    BOOST_CHECK(TestParse("[::]:31472", "[::]:31472"));
+    BOOST_CHECK(TestParse("[::]:43013", "[::]:43013"));
     BOOST_CHECK(TestParse("[127.0.0.1]", "127.0.0.1:65535"));
     BOOST_CHECK(TestParse(":::", ""));
 }
