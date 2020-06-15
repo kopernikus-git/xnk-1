@@ -66,6 +66,13 @@ Detailed release notes follow. For convenience in locating the code changes and 
 - #1273 `d114eda990` [Core] Update checkpoints for first v7 block (Fuzzbawls)
 
 ### GUI
+
+**Keyboard navigation**: dialogs can now be accepted with the `ENTER` (`RETURN`) key, and dismissed with the `ESC` key ([#1392](https://github.com/PIVX-Project/PIVX/pull/1392)).
+
+
+**Address sorting**: address sorting in "My Addresses" / "Contacts" / "Cold Staking" can now be customized, setting it either by label (default), by address, or by creation date, ascending (default) or descending order.
+Addresses in the dropdown of the "Send Transaction" and "Send Delegation" widgets are now automatically sorted by label with ascending order ([#1393](https://github.com/PIVX-Project/PIVX/pull/1393)).
+
 - #1261 `c02cc4acdd` [Bug][GUI] Double counted delegated balance. (furszy)
 - #1267 `350184044d` [Qt][Bug] Load the most recent instead of the first transactions (Fuzzbawls)
 - #1263 `1d0c1bb81c` [GUI] P2CS transaction divided in two types for visual accuracy. (furszy)
