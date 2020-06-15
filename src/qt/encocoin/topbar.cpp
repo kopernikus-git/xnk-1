@@ -70,6 +70,10 @@ TopBar::TopBar(EncoCoinGUI* _mainWindow, QWidget *parent) :
     ui->pushButtonConnection->setButtonClassStyle("cssClass", "btn-check-connect-inactive");
     ui->pushButtonConnection->setButtonText("No Connection");
 
+    ui->pushButtonTor->setButtonClassStyle("cssClass", "btn-check-tor-inactive");
+    ui->pushButtonTor->setButtonText("Tor Disabled");
+    ui->pushButtonTor->setChecked(false);
+
     ui->pushButtonStack->setButtonClassStyle("cssClass", "btn-check-stack-inactive");
     ui->pushButtonStack->setButtonText("Staking Disabled");
 
@@ -370,6 +374,9 @@ void TopBar::updateStakingStatus(){
     setStakingStatusActive(walletModel &&
                            !walletModel->isWalletLocked() &&
                            walletModel->isStakingStatusActive());
+
+    // Taking advantage of this timer to update Tor status if needed.
+    updateTorIcon();
 }
 
 void TopBar::setNumConnections(int count) {
@@ -491,6 +498,26 @@ void TopBar::loadWalletModel(){
     onColdStakingClicked();
 
     isInitializing = false;
+}
+
+void TopBar::updateTorIcon() {
+    std::string ip_port;
+    bool torEnabled = clientModel->getTorInfo(ip_port);
+
+    if (torEnabled) {
+        if(!ui->pushButtonTor->isChecked()) {
+            ui->pushButtonTor->setChecked(true);
+            ui->pushButtonTor->setButtonClassStyle("cssClass", "btn-check-tor", true);
+        }
+        QString ip_port_q = QString::fromStdString(ip_port);
+       ui->pushButtonTor->setButtonText(tr("Tor Active: %1").arg(ip_port_q));
+    } else {
+        if (ui->pushButtonTor->isChecked()) {
+            ui->pushButtonTor->setChecked(false);
+            ui->pushButtonTor->setButtonClassStyle("cssClass", "btn-check-tor-inactive", true);
+            ui->pushButtonTor->setButtonText(tr("Tor Disabled"));
+        }
+    }
 }
 
 void TopBar::refreshStatus(){

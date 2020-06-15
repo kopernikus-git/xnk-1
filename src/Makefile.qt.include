@@ -566,6 +566,8 @@ RES_ICONS = \
   qt/encocoin/res/img/dark/ic-transaction-cs-contract-inactive.svg \
   qt/encocoin/res/img/img-qr.svg \
   qt/encocoin/res/img/ic-check-connect-off.svg \
+  qt/encocoin/res/img/ic-check-tor-off.svg \
+  qt/encocoin/res/img/ic-check-tor.svg \
   qt/encocoin/res/img/ic-label.svg \
   qt/encocoin/res/img/ic-transaction-received.svg \
   qt/encocoin/res/img/dark/ic-transaction-received.svg \
