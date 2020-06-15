@@ -63,8 +63,11 @@ EncoCoinGUI::EncoCoinGUI(const NetworkStyle* networkStyle, QWidget* parent) :
     enableWallet = false;
 #endif // ENABLE_WALLET
 
-    QString windowTitle = tr("EncoCoin Core") + " - ";
-    windowTitle += ((enableWallet) ? tr("Wallet") : tr("Node"));
+    QString windowTitle = QString::fromStdString(GetArg("-windowtitle", ""));
+    if (windowTitle.isEmpty()) {
+        windowTitle = tr("EncoCoin Core") + " - ";
+        windowTitle += ((enableWallet) ? tr("Wallet") : tr("Node"));
+    }
     windowTitle += " " + networkStyle->getTitleAddText();
     setWindowTitle(windowTitle);
 
