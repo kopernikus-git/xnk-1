@@ -166,6 +166,7 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/settings/settingssignmessagewidgets.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/settings/settingswalletoptionswidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/settings/settingswalletrepairwidget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/settings/settingsexportcsv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/settings/settingswidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/welcomecontentwidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/splash.cpp

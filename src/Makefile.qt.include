@@ -91,6 +91,7 @@ QT_FORMS_UI = \
   qt/encocoin/forms/privacywidget.ui \
   qt/encocoin/forms/coldstakingwidget.ui \
   qt/encocoin/settings/forms/settingsbackupwallet.ui \
+  qt/encocoin/settings/forms/settingsexportcsv.ui \
   qt/encocoin/settings/forms/settingsbittoolwidget.ui \
   qt/encocoin/settings/forms/settingsconsolewidget.ui \
   qt/encocoin/settings/forms/settingsdisplayoptionswidget.ui \
@@ -187,6 +188,7 @@ QT_MOC_CPP = \
   qt/encocoin/moc_denomgenerationdialog.cpp \
   qt/encocoin/moc_privacywidget.cpp \
   qt/encocoin/moc_coldstakingwidget.cpp \
+  qt/encocoin/settings/moc_settingsexportcsv.cpp \
   qt/encocoin/settings/moc_settingsbackupwallet.cpp \
   qt/encocoin/settings/moc_settingsbittoolwidget.cpp \
   qt/encocoin/settings/moc_settingsconsolewidget.cpp \
@@ -319,6 +321,7 @@ BITCOIN_QT_H = \
   qt/encocoin/privacywidget.h \
   qt/encocoin/coldstakingwidget.h \
   qt/encocoin/settings/settingsbackupwallet.h \
+  qt/encocoin/settings/settingsexportcsv.h \
   qt/encocoin/settings/settingsbittoolwidget.h \
   qt/encocoin/settings/settingsconsolewidget.h \
   qt/encocoin/settings/settingsdisplayoptionswidget.h \
@@ -707,6 +710,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/encocoin/privacywidget.cpp \
   qt/encocoin/coldstakingwidget.cpp \
   qt/encocoin/settings/settingsbackupwallet.cpp \
+  qt/encocoin/settings/settingsexportcsv.cpp \
   qt/encocoin/settings/settingsbittoolwidget.cpp \
   qt/encocoin/settings/settingsconsolewidget.cpp \
   qt/encocoin/settings/settingsdisplayoptionswidget.cpp \
