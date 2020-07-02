@@ -23,8 +23,8 @@
 #include "pow.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
-#include "zpiv/zerocoin.h"
-#include "zpiv/zpivmodule.h"
+#include "zxnk/zerocoin.h"
+#include "zxnk/zxnkmodule.h"
 #include "script/script.h"
 #include "script/sigcache.h"
 #include "script/standard.h"
@@ -44,7 +44,7 @@
 #include <vector>
 
 #include "libzerocoin/CoinSpend.h"
-#include "lightzpivthread.h"
+#include "lightzxnkthread.h"
 
 #include <boost/unordered_map.hpp>
 

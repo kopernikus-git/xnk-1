@@ -12,7 +12,7 @@
 #include "main.h"
 #include "net.h"
 #include "primitives/transaction.h"
-#include "zpiv/deterministicmint.h"
+#include "zxnk/deterministicmint.h"
 #include "rpc/server.h"
 #include "script/script.h"
 #include "script/script_error.h"
@@ -21,7 +21,7 @@
 #include "swifttx.h"
 #include "uint256.h"
 #include "utilmoneystr.h"
-#include "zpivchain.h"
+#include "zxnkchain.h"
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
 #endif
@@ -972,11 +972,11 @@ UniValue createrawzerocoinstake(const UniValue& params, bool fHelp)
     vOutMint[0] = CTxOut(0, scriptEmpty);
     CDeterministicMint dMint;
     if (!pwalletMain->CreateZXNKOutPut(staked_denom, vOutMint[1], dMint))
-        throw JSONRPCError(RPC_WALLET_ERROR, "failed to create new zpiv output");
+        throw JSONRPCError(RPC_WALLET_ERROR, "failed to create new zxnk output");
 
     for (int i=2; i<5; i++) {
         if (!pwalletMain->CreateZXNKOutPut(libzerocoin::ZQ_ONE, vOutMint[i], dMint))
-            throw JSONRPCError(RPC_WALLET_ERROR, "failed to create new zpiv output");
+            throw JSONRPCError(RPC_WALLET_ERROR, "failed to create new zxnk output");
     }
     coinstake_tx.vout = vOutMint;
 
@@ -986,7 +986,7 @@ UniValue createrawzerocoinstake(const UniValue& params, bool fHelp)
 
     // create the zerocoinspend input
     CTxIn newTxIn;
-    // Use v2 spends for input (with v3 zpiv staking is disabled)
+    // Use v2 spends for input (with v3 zxnk staking is disabled)
     if (!pwalletMain->MintToTxIn(input_mint, hashTxOut, newTxIn, receipt, libzerocoin::SpendType::STAKE, nullptr, false))
         throw JSONRPCError(RPC_WALLET_ERROR, "failed to create zc-spend stake input");
 

@@ -12,7 +12,7 @@
 #include "optionsmodel.h"
 #include "coincontroldialog.h"
 #include "coincontrol.h"
-#include "zpiv/accumulators.h"
+#include "zxnk/accumulators.h"
 
 #define DECORATION_SIZE 65
 #define NUM_ITEMS 3
@@ -134,7 +134,7 @@ PrivacyWidget::PrivacyWidget(EncoCoinGUI* parent) :
     ui->btnResetZerocoin->setTitleClassAndText("btn-title-grey", "Reset Spent zXNK");
     ui->btnResetZerocoin->setSubTitleClassAndText("text-subtitle", "Reset zerocoin database.");
 
-    connect(ui->btnTotalzXNK, SIGNAL(clicked()), this, SLOT(onTotalZpivClicked()));
+    connect(ui->btnTotalzXNK, SIGNAL(clicked()), this, SLOT(onTotalZxnkClicked()));
     connect(ui->btnCoinControl, SIGNAL(clicked()), this, SLOT(onCoinControlClicked()));
     connect(ui->btnDenomGeneration, SIGNAL(clicked()), this, SLOT(onDenomClicked()));
     connect(ui->btnRescanMints, SIGNAL(clicked()), this, SLOT(onRescanMintsClicked()));
@@ -222,7 +222,7 @@ void PrivacyWidget::showList(){
     ui->listView->setVisible(true);
 }
 
-void PrivacyWidget::onTotalZpivClicked(){
+void PrivacyWidget::onTotalZxnkClicked(){
     bool isVisible = ui->layoutDenom->isVisible();
     if(!isVisible){
         ui->layoutDenom->setVisible(true);
@@ -289,7 +289,7 @@ void PrivacyWidget::spend(CAmount value){
     bool mintChange = false;
     bool minimizeChange = false;
 
-    if(!walletModel->convertBackZpiv(
+    if(!walletModel->convertBackZxnk(
             value,
             selectedMints,
             mintChange,

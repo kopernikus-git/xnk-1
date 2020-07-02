@@ -57,9 +57,9 @@ DashboardWidget::DashboardWidget(EncoCoinGUI* parent) :
     // Staking Information
     ui->labelMessage->setText(tr("Amount of XNK staked."));
     setCssSubtitleScreen(ui->labelMessage);
-    setCssProperty(ui->labelSquarePiv, "square-chart-piv");
-    setCssProperty(ui->labelSquarezPiv, "square-chart-zpiv");
-    setCssProperty(ui->labelPiv, "text-chart-piv");
+    setCssProperty(ui->labelSquareXnk, "square-chart-xnk");
+    setCssProperty(ui->labelSquarezXnk, "square-chart-zxnk");
+    setCssProperty(ui->labelXnk, "text-chart-xnk");
 
     // Staking Amount
     QFont fontBold;
@@ -67,8 +67,8 @@ DashboardWidget::DashboardWidget(EncoCoinGUI* parent) :
 
     setCssProperty(ui->labelChart, "legend-chart");
 
-    ui->labelAmountPiv->setText("0 XNK");
-    setCssProperty(ui->labelAmountPiv, "text-stake-piv-disable");
+    ui->labelAmountXnk->setText("0 XNK");
+    setCssProperty(ui->labelAmountXnk, "text-stake-xnk-disable");
 
     setCssProperty({ui->pushButtonAll,  ui->pushButtonMonth, ui->pushButtonYear}, "btn-check-time");
     setCssProperty({ui->comboBoxMonths,  ui->comboBoxYears}, "btn-combo-chart-selected");
@@ -490,7 +490,7 @@ const QMap<int, std::pair<qint64, qint64>> DashboardWidget::getAmountBy() {
         QModelIndex modelIndex = stakesFilter->index(i, TransactionTableModel::ToAddress);
         qint64 amount = llabs(modelIndex.data(TransactionTableModel::AmountRole).toLongLong());
         QDate date = modelIndex.data(TransactionTableModel::DateRole).toDateTime().date();
-        bool isPiv = modelIndex.data(TransactionTableModel::TypeRole).toInt() != TransactionRecord::StakeZXNK;
+        bool isXnk = modelIndex.data(TransactionTableModel::TypeRole).toInt() != TransactionRecord::StakeZXNK;
 
         int time = 0;
         switch (chartShow) {
@@ -511,16 +511,16 @@ const QMap<int, std::pair<qint64, qint64>> DashboardWidget::getAmountBy() {
                 return amountBy;
         }
         if (amountBy.contains(time)) {
-            if (isPiv) {
+            if (isXnk) {
                 amountBy[time].first += amount;
             } else
                 amountBy[time].second += amount;
         } else {
-            if (isPiv) {
+            if (isXnk) {
                 amountBy[time] = std::make_pair(amount, 0);
             } else {
                 amountBy[time] = std::make_pair(0, amount);
-                hasZpivStakes = true;
+                hasZxnkStakes = true;
             }
         }
     }
@@ -548,22 +548,22 @@ bool DashboardWidget::loadChartData(bool withMonthNames) {
 
     for (int j = range.first; j < range.second; j++) {
         int num = (isOrderedByMonth && j > daysInMonth) ? (j % daysInMonth) : j;
-        qreal piv = 0;
-        qreal zpiv = 0;
+        qreal xnk = 0;
+        qreal zxnk = 0;
         if (chartData->amountsByCache.contains(num)) {
             std::pair <qint64, qint64> pair = chartData->amountsByCache[num];
-            piv = (pair.first != 0) ? pair.first / 100000000 : 0;
-            zpiv = (pair.second != 0) ? pair.second / 100000000 : 0;
-            chartData->totalPiv += pair.first;
-            chartData->totalZpiv += pair.second;
+            xnk = (pair.first != 0) ? pair.first / 100000000 : 0;
+            zxnk = (pair.second != 0) ? pair.second / 100000000 : 0;
+            chartData->totalXnk += pair.first;
+            chartData->totalZxnk += pair.second;
         }
 
         chartData->xLabels << ((withMonthNames) ? monthsNames[num - 1] : QString::number(num));
 
-        chartData->valuesPiv.append(piv);
-        chartData->valueszPiv.append(zpiv);
+        chartData->valuesXnk.append(xnk);
+        chartData->valueszXnk.append(zxnk);
 
-        int max = std::max(piv, zpiv);
+        int max = std::max(xnk, zxnk);
         if (max > chartData->maxValue) {
             chartData->maxValue = max;
         }
@@ -628,21 +628,21 @@ void DashboardWidget::onChartRefreshed() {
     series->attachAxis(axisX);
     series->attachAxis(axisY);
 
-    set0->append(chartData->valuesPiv);
-    set1->append(chartData->valueszPiv);
+    set0->append(chartData->valuesXnk);
+    set1->append(chartData->valueszXnk);
 
     // Total
     nDisplayUnit = walletModel->getOptionsModel()->getDisplayUnit();
-    if (chartData->totalPiv > 0 || chartData->totalZpiv > 0) {
-        setCssProperty(ui->labelAmountPiv, "text-stake-piv");
+    if (chartData->totalXnk > 0 || chartData->totalZxnk > 0) {
+        setCssProperty(ui->labelAmountXnk, "text-stake-xnk");
     } else {
-        setCssProperty(ui->labelAmountPiv, "text-stake-piv-disable");
+        setCssProperty(ui->labelAmountXnk, "text-stake-xnk-disable");
     }
-    forceUpdateStyle({ui->labelAmountPiv});
-    ui->labelAmountPiv->setText(GUIUtil::formatBalance(chartData->totalPiv, nDisplayUnit));
+    forceUpdateStyle({ui->labelAmountXnk});
+    ui->labelAmountXnk->setText(GUIUtil::formatBalance(chartData->totalXnk, nDisplayUnit));
 
     series->append(set0);
-    if(hasZpivStakes)
+    if(hasZxnkStakes)
         series->append(set1);
 
     // bar width

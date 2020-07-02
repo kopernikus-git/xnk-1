@@ -2,15 +2,15 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <zpiv/deterministicmint.h>
-#include "zpivtracker.h"
+#include <zxnk/deterministicmint.h>
+#include "zxnktracker.h"
 #include "util.h"
 #include "sync.h"
 #include "main.h"
 #include "txdb.h"
 #include "wallet/walletdb.h"
-#include "zpiv/accumulators.h"
-#include "zpiv/zpivwallet.h"
+#include "zxnk/accumulators.h"
+#include "zxnk/zxnkwallet.h"
 #include "witness.h"
 
 
@@ -134,7 +134,7 @@ CAmount CzXNKTracker::GetBalance(bool fConfirmedOnly, bool fUnconfirmedOnly) con
     }
 
     {
-        //LOCK(cs_pivtracker);
+        //LOCK(cs_xnktracker);
         // Get Unused coins
         for (auto& it : mapSerialHashes) {
             CMintMeta meta = it.second;
@@ -454,7 +454,7 @@ std::set<CMintMeta> CzXNKTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, 
             Add(dMint, false, false, zXNKWallet);
         }
         delete zXNKWallet;
-        LogPrint("zero", "%s: added %d dzpiv from DB\n", __func__, listDeterministicDB.size());
+        LogPrint("zero", "%s: added %d dzxnk from DB\n", __func__, listDeterministicDB.size());
     }
 
     std::vector<CMintMeta> vOverWrite;

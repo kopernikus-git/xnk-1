@@ -8,19 +8,19 @@
 #include <QDialog>
 
 namespace Ui {
-class CoinControlPivWidget;
+class CoinControlXnkWidget;
 }
 
-class CoinControlPivWidget : public QDialog
+class CoinControlXnkWidget : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CoinControlPivWidget(QWidget *parent = nullptr);
-    ~CoinControlPivWidget();
+    explicit CoinControlXnkWidget(QWidget *parent = nullptr);
+    ~CoinControlXnkWidget();
 
 private:
-    Ui::CoinControlPivWidget *ui;
+    Ui::CoinControlXnkWidget *ui;
 };
 
 #endif // COINCONTROLXNKWIDGET_H

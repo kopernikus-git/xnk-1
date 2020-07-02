@@ -92,7 +92,7 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/addresstablemodel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/askpassphrasedialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/coincontroldialog.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/zpivcontroldialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zxnkcontroldialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/coincontroltreewidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/proposalframe.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/editaddressdialog.cpp
@@ -106,7 +106,7 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/transactiontablemodel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/walletmodel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/walletmodeltransaction.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/zpivcontroldialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zxnkcontroldialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/encocoingui.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/loadingdialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/pwidget.cpp
@@ -124,7 +124,7 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/txrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/addressfilterproxymodel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/dashboardwidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/coincontrolpivwidget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/coincontrolxnkwidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/addresslabelrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/contactdropdownrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/contactsdropdown.cpp
