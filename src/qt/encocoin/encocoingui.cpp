@@ -242,7 +242,7 @@ EncoCoinGUI::~EncoCoinGUI() {
 /** Get restart command-line parameters and request restart */
 void EncoCoinGUI::handleRestart(QStringList args){
     if (!ShutdownRequested())
-        emit requestedRestart(args);
+        Q_EMIT requestedRestart(args);
 }
 
 
@@ -516,7 +516,7 @@ void EncoCoinGUI::changeTheme(bool isLightTheme){
     this->setStyleSheet(css);
 
     // Notify
-    emit themeChanged(isLightTheme, css);
+    Q_EMIT themeChanged(isLightTheme, css);
 
     // Update style
     updateStyle(this);
@@ -528,7 +528,7 @@ void EncoCoinGUI::resizeEvent(QResizeEvent* event){
     // background
     showHide(opEnabled);
     // Notify
-    emit windowResizeEvent(event);
+    Q_EMIT windowResizeEvent(event);
 }
 
 bool EncoCoinGUI::execDialog(QDialog *dialog, int xDiv, int yDiv){

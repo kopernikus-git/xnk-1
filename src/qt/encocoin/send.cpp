@@ -385,7 +385,7 @@ bool SendWidget::sendZxnk(QList<SendCoinsRecipient> recipients){
         return false;
 
     if(sporkManager.IsSporkActive(SPORK_16_ZEROCOIN_MAINTENANCE_MODE)) {
-        emit message(tr("Spend Zerocoin"), tr("zXNK is currently undergoing maintenance."), CClientUIInterface::MSG_ERROR);
+        Q_EMIT message(tr("Spend Zerocoin"), tr("zXNK is currently undergoing maintenance."), CClientUIInterface::MSG_ERROR);
         return false;
     }
 
@@ -422,7 +422,7 @@ bool SendWidget::sendZxnk(QList<SendCoinsRecipient> recipients){
            .arg(recipientsToString(recipients));
 
     bool ret = false;
-    emit message(
+    Q_EMIT message(
             tr("Spend Zerocoin"),
             sendBody,
             CClientUIInterface::MSG_INFORMATION | CClientUIInterface::BTN_MASK | CClientUIInterface::MODAL,
@@ -468,7 +468,7 @@ bool SendWidget::sendZxnk(QList<SendCoinsRecipient> recipients){
                 body = QString::fromStdString(receipt.GetStatusMessage());
             }
         }
-        emit message("zXNK transaction failed", body, CClientUIInterface::MSG_ERROR);
+        Q_EMIT message("zXNK transaction failed", body, CClientUIInterface::MSG_ERROR);
         return false;
     }
 }
@@ -493,7 +493,7 @@ void SendWidget::updateEntryLabels(QList<SendCoinsRecipient> recipients){
                                                                   AddressBook::AddressBookPurpose::RECEIVE :
                                                                   AddressBook::AddressBookPurpose::SEND)) {
                     // Label update failed
-                    emit message("", tr("Address label update failed for address: %1").arg(rec.address), CClientUIInterface::MSG_ERROR);
+                    Q_EMIT message("", tr("Address label update failed for address: %1").arg(rec.address), CClientUIInterface::MSG_ERROR);
                     return;
                 }
             }
@@ -554,7 +554,7 @@ void SendWidget::onOpenUriClicked(){
             entry->setAddressAndLabelOrDescription(rcp.address, rcp.message);
             entry->setAmount(BitcoinUnits::format(nDisplayUnit, rcp.amount, false));
         }
-        emit receivedURI(dlg->getURI());
+        Q_EMIT receivedURI(dlg->getURI());
     }
     dlg->deleteLater();
 }

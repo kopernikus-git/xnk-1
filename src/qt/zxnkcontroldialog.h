@@ -57,7 +57,7 @@ private:
     };
     friend class CZXnkControlWidgetItem;
 
-private slots:
+private Q_SLOTS:
     void updateSelection(QTreeWidgetItem* item, int column);
     void ButtonAllClicked();
 };

@@ -20,7 +20,7 @@ public:
     explicit SettingsBackupWallet(EncoCoinGUI* _window, QWidget *parent = nullptr);
     ~SettingsBackupWallet();
 
-private slots:
+private Q_SLOTS:
     void selectFileOutput();
     void changePassphrase();
 
