@@ -266,7 +266,7 @@ static void BlockTipChanged(ClientModel *clientmodel, bool initialSync, const CB
         Q_EMIT clientmodel->numBlocksChanged(newHeight);
         nLastBlockTipUpdateNotification = now;
     }
-
+}
 
 // Handlers for core signals
 static void ShowProgress(ClientModel* clientmodel, const std::string& title, int nProgress)
