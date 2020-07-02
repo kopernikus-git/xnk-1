@@ -54,7 +54,7 @@ QT_FORMS_UI = \
   qt/forms/optionsdialog.ui \
   qt/forms/rpcconsole.ui \
   qt/encocoin/forms/loadingdialog.ui \
-  qt/forms/zpivcontroldialog.ui \
+  qt/forms/zxnkcontroldialog.ui \
   qt/encocoin/forms/snackbar.ui \
   qt/encocoin/forms/navmenuwidget.ui \
   qt/encocoin/forms/lockunlock.ui \
@@ -64,7 +64,7 @@ QT_FORMS_UI = \
   qt/encocoin/forms/topbar.ui \
   qt/encocoin/forms/txrow.ui \
   qt/encocoin/forms/dashboardwidget.ui \
-  qt/encocoin/forms/coincontrolpivwidget.ui \
+  qt/encocoin/forms/coincontrolxnkwidget.ui \
   qt/encocoin/forms/addresslabelrow.ui \
   qt/encocoin/forms/contactdropdownrow.ui \
   qt/encocoin/forms/mninfodialog.ui \
@@ -146,7 +146,7 @@ QT_MOC_CPP = \
   qt/moc_utilitydialog.cpp \
   qt/moc_walletmodel.cpp \
   qt/encocoin/moc_loadingdialog.cpp \
-  qt/moc_zpivcontroldialog.cpp \
+  qt/moc_zxnkcontroldialog.cpp \
   qt/encocoin/moc_pwidget.cpp \
   qt/encocoin/moc_snackbar.cpp \
   qt/encocoin/moc_navmenuwidget.cpp \
@@ -159,7 +159,7 @@ QT_MOC_CPP = \
   qt/encocoin/moc_topbar.cpp \
   qt/encocoin/moc_txrow.cpp \
   qt/encocoin/moc_dashboardwidget.cpp \
-  qt/encocoin/moc_coincontrolpivwidget.cpp \
+  qt/encocoin/moc_coincontrolxnkwidget.cpp \
   qt/encocoin/moc_addresslabelrow.cpp \
   qt/encocoin/moc_contactdropdownrow.cpp \
   qt/encocoin/moc_mninfodialog.cpp \
@@ -273,7 +273,7 @@ BITCOIN_QT_H = \
   qt/encocoin/pfborderimage.h \
   qt/encocoin/loadingdialog.h \
   qt/winshutdownmonitor.h \
-  qt/zpivcontroldialog.h \
+  qt/zxnkcontroldialog.h \
   qt/encocoin/pwidget.h \
   qt/encocoin/guitransactionsutils.h \
   qt/encocoin/snackbar.h \
@@ -291,7 +291,7 @@ BITCOIN_QT_H = \
   qt/encocoin/addressholder.h \
   qt/encocoin/addressfilterproxymodel.h \
   qt/encocoin/dashboardwidget.h \
-  qt/encocoin/coincontrolpivwidget.h \
+  qt/encocoin/coincontrolxnkwidget.h \
   qt/encocoin/addresslabelrow.h \
   qt/encocoin/contactdropdownrow.h \
   qt/encocoin/mninfodialog.h \
@@ -507,15 +507,15 @@ RES_ICONS = \
   qt/encocoin/res/img/ic-radio-liliac-on.svg \
   qt/encocoin/res/img/img-empty-staking-off.svg \
   qt/encocoin/res/img/ic-arrow-drop-down.svg \
-  qt/encocoin/res/img/ic-coin-piv.svg \
+  qt/encocoin/res/img/ic-coin-xnk.svg \
   qt/encocoin/res/img/ic-receive-off.svg \
   qt/encocoin/res/img/img-empty-staking-on.svg \
   qt/encocoin/res/img/ic-arrow-drop-up-white.svg \
-  qt/encocoin/res/img/ic-coin-zpiv.png \
+  qt/encocoin/res/img/ic-coin-zxnk.png \
   qt/encocoin/res/img/ic-receive-on.svg \
   qt/encocoin/res/img/img-empty-transactions.svg \
   qt/encocoin/res/img/ic-arrow-drop-up.svg \
-  qt/encocoin/res/img/ic-coin-zpiv.svg \
+  qt/encocoin/res/img/ic-coin-zxnk.svg \
   qt/encocoin/res/img/ic-received.svg \
   qt/encocoin/res/img/img-logo-encocoin.png \
   qt/encocoin/res/img/ic-arrow-drop-white-down.svg \
@@ -665,7 +665,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \
   qt/encocoin/loadingdialog.cpp \
-  qt/zpivcontroldialog.cpp \
+  qt/zxnkcontroldialog.cpp \
   qt/encocoin/pwidget.cpp \
   qt/encocoin/guitransactionsutils.cpp \
   qt/encocoin/snackbar.cpp \
@@ -682,7 +682,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/encocoin/addressholder.cpp \
   qt/encocoin/addressfilterproxymodel.cpp \
   qt/encocoin/dashboardwidget.cpp \
-  qt/encocoin/coincontrolpivwidget.cpp \
+  qt/encocoin/coincontrolxnkwidget.cpp \
   qt/encocoin/addresslabelrow.cpp \
   qt/encocoin/contactdropdownrow.cpp \
   qt/encocoin/contactsdropdown.cpp \

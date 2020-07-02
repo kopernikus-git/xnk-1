@@ -16,9 +16,9 @@
 #include "addresstablemodel.h"
 #include "coincontrol.h"
 #include "script/standard.h"
-#include "zpiv/deterministicmint.h"
+#include "zxnk/deterministicmint.h"
 #include "openuridialog.h"
-#include "zpivcontroldialog.h"
+#include "zxnkcontroldialog.h"
 
 SendWidget::SendWidget(EncoCoinGUI* parent) :
     PWidget(parent),
@@ -111,7 +111,7 @@ SendWidget::SendWidget(EncoCoinGUI* parent) :
     coinIcon->show();
     coinIcon->raise();
 
-    setCssProperty(coinIcon, "coin-icon-piv");
+    setCssProperty(coinIcon, "coin-icon-xnk");
 
     QSize BUTTON_SIZE = QSize(24, 24);
     coinIcon->setMinimumSize(BUTTON_SIZE);
@@ -307,19 +307,19 @@ void SendWidget::onSendClicked(){
         return;
     }
 
-    bool sendPiv = true;
+    bool sendXnk = true;
 
     // request unlock only if was locked or unlocked for mixing:
     // this way we let users unlock by walletpassphrase or by menu
     // and make many transactions while unlocking through this dialog
     // will call relock
-    if(!GUIUtil::requestUnlock(walletModel, sendPiv ? AskPassphraseDialog::Context::Send_XNK : AskPassphraseDialog::Context::Send_zXNK, true)){
+    if(!GUIUtil::requestUnlock(walletModel, sendXnk ? AskPassphraseDialog::Context::Send_XNK : AskPassphraseDialog::Context::Send_zXNK, true)){
         // Unlock wallet was cancelled
         inform(tr("Cannot send, wallet locked"));
         return;
     }
 
-    if((sendPiv) ? send(recipients) : sendZpiv(recipients)) {
+    if((sendXnk) ? send(recipients) : sendZxnk(recipients)) {
         updateEntryLabels(recipients);
     }
     setFocusOnLastEntry();
@@ -380,7 +380,7 @@ bool SendWidget::send(QList<SendCoinsRecipient> recipients){
     return false;
 }
 
-bool SendWidget::sendZpiv(QList<SendCoinsRecipient> recipients){
+bool SendWidget::sendZxnk(QList<SendCoinsRecipient> recipients){
     if (!walletModel || !walletModel->getOptionsModel())
         return false;
 
@@ -399,8 +399,8 @@ bool SendWidget::sendZpiv(QList<SendCoinsRecipient> recipients){
     // use mints from zXNK selector if applicable
     std::vector<CMintMeta> vMintsToFetch;
     std::vector<CZerocoinMint> vMintsSelected;
-    if (!ZPivControlDialog::setSelectedMints.empty()) {
-        vMintsToFetch = ZPivControlDialog::GetSelectedMints();
+    if (!ZXnkControlDialog::setSelectedMints.empty()) {
+        vMintsToFetch = ZXnkControlDialog::GetSelectedMints();
 
         for (auto& meta : vMintsToFetch) {
             CZerocoinMint mint;
@@ -439,7 +439,7 @@ bool SendWidget::sendZpiv(QList<SendCoinsRecipient> recipients){
         changeAddress = walletModel->getAddressTableModel()->getAddressToShow().toStdString();
     }
 
-    if (walletModel->sendZpiv(
+    if (walletModel->sendZxnk(
             vMintsSelected,
             true,
             true,
@@ -449,7 +449,7 @@ bool SendWidget::sendZpiv(QList<SendCoinsRecipient> recipients){
     )
             ) {
         inform(tr("zXNK transaction sent!"));
-        ZPivControlDialog::setSelectedMints.clear();
+        ZXnkControlDialog::setSelectedMints.clear();
         clearAll();
         return true;
     } else {
@@ -593,11 +593,11 @@ void SendWidget::onCoinControlClicked(){
         }
     }else{
         if (walletModel->getZerocoinBalance() > 0) {
-            ZPivControlDialog *zPivControl = new ZPivControlDialog(this);
-            zPivControl->setModel(walletModel);
-            zPivControl->exec();
-            ui->btnCoinControl->setActive(!ZPivControlDialog::setSelectedMints.empty());
-            zPivControl->deleteLater();
+            ZXnkControlDialog *zXnkControl = new ZXnkControlDialog(this);
+            zXnkControl->setModel(walletModel);
+            zXnkControl->exec();
+            ui->btnCoinControl->setActive(!ZXnkControlDialog::setSelectedMints.empty());
+            zXnkControl->deleteLater();
         } else {
             inform(tr("You don't have any zXNK in your balance to select."));
         }
@@ -610,7 +610,7 @@ void SendWidget::onValueChanged() {
 
 void SendWidget::onXNKSelected(bool _isXNK){
     isXNK = _isXNK;
-    setCssProperty(coinIcon, _isXNK ? "coin-icon-piv" : "coin-icon-piv");
+    setCssProperty(coinIcon, _isXNK ? "coin-icon-xnk" : "coin-icon-xnk");
     refreshView();
     updateStyle(coinIcon);
 }
@@ -703,8 +703,8 @@ void SendWidget::onContactMultiClicked(){
             inform(tr("Invalid address"));
             return;
         }
-        CBitcoinAddress pivAdd = CBitcoinAddress(address.toStdString());
-        if (walletModel->isMine(pivAdd)) {
+        CBitcoinAddress xnkAdd = CBitcoinAddress(address.toStdString());
+        if (walletModel->isMine(xnkAdd)) {
             inform(tr("Cannot store your own address as contact"));
             return;
         }
@@ -724,7 +724,7 @@ void SendWidget::onContactMultiClicked(){
             if (label == dialog->getLabel()) {
                 return;
             }
-            if (walletModel->updateAddressBookLabels(pivAdd.Get(), dialog->getLabel().toStdString(),
+            if (walletModel->updateAddressBookLabels(xnkAdd.Get(), dialog->getLabel().toStdString(),
                     AddressBook::AddressBookPurpose::SEND)) {
                 inform(tr("New Contact Stored"));
             } else {

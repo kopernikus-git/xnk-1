@@ -47,9 +47,9 @@ TopBar::TopBar(EncoCoinGUI* _mainWindow, QWidget *parent) :
 
     // Amount information top
     ui->widgetTopAmount->setVisible(false);
-    setCssProperty({ui->labelAmountTopPiv}, "amount-small-topbar");
-    setCssProperty({ui->labelAmountPiv}, "amount-topbar");
-    setCssProperty({ui->labelPendingPiv, ui->labelImmaturePiv}, "amount-small-topbar");
+    setCssProperty({ui->labelAmountTopXnk}, "amount-small-topbar");
+    setCssProperty({ui->labelAmountXnk}, "amount-topbar");
+    setCssProperty({ui->labelPendingXnk, ui->labelImmatureXnk}, "amount-small-topbar");
 
     // Progress Sync
     progressBar = new QProgressBar(ui->layoutSync);
@@ -574,22 +574,22 @@ void TopBar::updateBalances(const CAmount& balance, const CAmount& unconfirmedBa
     ui->labelTitle1->setText(nLockedBalance > 0 ? tr("Available (Locked included)") : tr("Available"));
 
     // XNK Total
-    CAmount pivAvailableBalance = balance;
+    CAmount xnkAvailableBalance = balance;
     // zXNK Balance
     CAmount matureZerocoinBalance = zerocoinBalance - unconfirmedZerocoinBalance - immatureZerocoinBalance;
 
     // Set
-    QString totalPiv = GUIUtil::formatBalance(pivAvailableBalance, nDisplayUnit);
-    QString totalzPiv = GUIUtil::formatBalance(matureZerocoinBalance, nDisplayUnit, true);
+    QString totalXnk = GUIUtil::formatBalance(xnkAvailableBalance, nDisplayUnit);
+    QString totalzXnk = GUIUtil::formatBalance(matureZerocoinBalance, nDisplayUnit, true);
     // Top
-    ui->labelAmountTopPiv->setText(totalPiv);
+    ui->labelAmountTopXnk->setText(totalXnk);
 
     // Expanded
-    ui->labelAmountPiv->setText(totalPiv);
+    ui->labelAmountXnk->setText(totalXnk);
 
-    ui->labelPendingPiv->setText(GUIUtil::formatBalance(unconfirmedBalance, nDisplayUnit));
+    ui->labelPendingXnk->setText(GUIUtil::formatBalance(unconfirmedBalance, nDisplayUnit));
 
-    ui->labelImmaturePiv->setText(GUIUtil::formatBalance(immatureBalance, nDisplayUnit));
+    ui->labelImmatureXnk->setText(GUIUtil::formatBalance(immatureBalance, nDisplayUnit));
 }
 
 void TopBar::resizeEvent(QResizeEvent *event){

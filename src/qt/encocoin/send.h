@@ -14,7 +14,7 @@
 #include "qt/encocoin/sendcustomfeedialog.h"
 #include "walletmodel.h"
 #include "coincontroldialog.h"
-#include "zpivcontroldialog.h"
+#include "zxnkcontroldialog.h"
 #include "qt/encocoin/tooltipmenu.h"
 
 static const int MAX_SEND_POPUP_ENTRIES = 8;
@@ -93,7 +93,7 @@ private:
     QString recipientsToString(QList<SendCoinsRecipient> recipients);
     SendMultiRow* createEntry();
     bool send(QList<SendCoinsRecipient> recipients);
-    bool sendZpiv(QList<SendCoinsRecipient> recipients);
+    bool sendZxnk(QList<SendCoinsRecipient> recipients);
     void setFocusOnLastEntry();
     void updateEntryLabels(QList<SendCoinsRecipient> recipients);
 

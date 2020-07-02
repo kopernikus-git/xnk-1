@@ -195,8 +195,8 @@
         <file alias="ic-clear-purple">encocoin/res/img/ic-clear-purple.svg</file>
         <file alias="ic-close-white">encocoin/res/img/ic-close-white.svg</file>
         <file alias="ic-close">encocoin/res/img/ic-close.svg</file>
-        <file alias="ic-coin-piv">encocoin/res/img/ic-coin-piv.svg</file>
-        <file alias="ic-coin-zpiv">encocoin/res/img/ic-coin-zpiv.svg</file>
+        <file alias="ic-coin-xnk">encocoin/res/img/ic-coin-xnk.svg</file>
+        <file alias="ic-coin-zxnk">encocoin/res/img/ic-coin-zxnk.svg</file>
         <file alias="ic-combo-box">encocoin/res/img/ic-combo-box.svg</file>
         <file alias="ic-connect">encocoin/res/img/ic-connect.svg</file>
         <file alias="ic-copy-liliac">encocoin/res/img/ic-copy-liliac.svg</file>

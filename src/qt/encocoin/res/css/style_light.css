@@ -1706,28 +1706,28 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
     font-size:20px;
 }
 
-*[cssClass="text-stake-piv"] {
+*[cssClass="text-stake-xnk"] {
     color:#7c6817;
     font-size:16px;
     padding:10px;
     border-bottom: 5px solid #7c6817;
 }
 
-*[cssClass="text-stake-piv-disable"] {
+*[cssClass="text-stake-xnk-disable"] {
     color:#d7d5da;
     font-size:16px;
     padding:10px;
     border-bottom: 5px solid #bbb8c0;
 }
 
-*[cssClass="text-stake-zpiv"] {
+*[cssClass="text-stake-zxnk"] {
     color:#c9bc6a;
     font-size:16px;
     padding:10px;
     border-bottom: 5px solid #c9bc6a;
 }
 
-*[cssClass="text-stake-zpiv-disable"] {
+*[cssClass="text-stake-zxnk-disable"] {
     color:#d7d5da;
     font-size:16px;
     padding:10px;
@@ -1739,24 +1739,24 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
     font-size:16px;
 }
 
-*[cssClass="text-chart-zpiv"] {
+*[cssClass="text-chart-zxnk"] {
     color:#c9bc6a;
     font-size:16px;
     padding-left:4px;
 }
 
-*[cssClass="text-chart-piv"] {
+*[cssClass="text-chart-xnk"] {
     color:#7c6817;
     font-size:16px;
     padding-left:4px;
 }
 
-*[cssClass="square-chart-zpiv"] {
+*[cssClass="square-chart-zxnk"] {
     background-color:#c9bc6a;
     border:none;
 }
 
-*[cssClass="square-chart-piv"] {
+*[cssClass="square-chart-xnk"] {
     background-color:#7c6817;
     border:none;
 }
@@ -2338,16 +2338,16 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
 }
 
 
-*[cssClass="coin-icon-piv"] {
+*[cssClass="coin-icon-xnk"] {
     qproperty-iconSize: 24px 24px;
     background-color: #FFFFFF;
     border:  2px solid #FFFFFF;
     border-radius: 12px;
 }
 
-*[cssClass="coin-icon-zpiv"] {
-    qproperty-icon: url("://ic-coin-zpiv") off,
-    url("://ic-coin-zpiv") on ;
+*[cssClass="coin-icon-zxnk"] {
+    qproperty-icon: url("://ic-coin-zxnk") off,
+    url("://ic-coin-zxnk") on ;
     qproperty-iconSize: 24px 24px;
     background-position:center;
     background-repeat:no-repeat;

@@ -156,9 +156,9 @@ static const CRPCConvertParam vRPCConvertParams[] =
 */
         {"generatemintlist", 0},
         {"generatemintlist", 1},
-        {"searchdzpiv", 0},
-        {"searchdzpiv", 1},
-        {"searchdzpiv", 2},
+        {"searchdzxnk", 0},
+        {"searchdzxnk", 1},
+        {"searchdzxnk", 2},
         {"getaccumulatorvalues", 0},
         {"getaccumulatorwitness",2},
         {"getmintsvalues", 2},

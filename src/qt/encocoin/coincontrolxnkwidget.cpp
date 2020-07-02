@@ -2,12 +2,12 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "qt/encocoin/coincontrolpivwidget.h"
-#include "qt/encocoin/forms/ui_coincontrolpivwidget.h"
+#include "qt/encocoin/coincontrolxnkwidget.h"
+#include "qt/encocoin/forms/ui_coincontrolxnkwidget.h"
 
-CoinControlPivWidget::CoinControlPivWidget(QWidget *parent) :
+CoinControlXnkWidget::CoinControlXnkWidget(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::CoinControlPivWidget)
+    ui(new Ui::CoinControlXnkWidget)
 {
     ui->setupUi(this);
 
@@ -83,7 +83,7 @@ CoinControlPivWidget::CoinControlPivWidget(QWidget *parent) :
 
 }
 
-CoinControlPivWidget::~CoinControlPivWidget()
+CoinControlXnkWidget::~CoinControlXnkWidget()
 {
     delete ui;
 }

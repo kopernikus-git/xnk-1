@@ -743,9 +743,9 @@ class EncoCoinTestFramework():
                  nHeight:                   (int) height of the previous block. used only if zpos=True for
                                             stake checksum. Optional, if not provided rpc_conn's height is used.
         :return: prevouts:         ({bytes --> (int, bytes, int)} dictionary)
-                                   maps CStake "uniqueness" (i.e. serialized COutPoint -or hash stake, for zpiv-)
+                                   maps CStake "uniqueness" (i.e. serialized COutPoint -or hash stake, for zxnk-)
                                    to (amount, prevScript, timeBlockFrom).
-                                   For zpiv prevScript is replaced with serialHash hex string.
+                                   For zxnk prevScript is replaced with serialHash hex string.
         """
         assert_greater_than(len(self.nodes), node_id)
         rpc_conn = self.nodes[node_id]
@@ -785,9 +785,9 @@ class EncoCoinTestFramework():
         """ makes a list of CTransactions each spending an input from spending PrevOuts to an output to_pubKey
         :param   node_id:            (int) index of the CTestNode used as rpc connection. Must own spendingPrevOuts.
                  spendingPrevouts:   ({bytes --> (int, bytes, int)} dictionary)
-                                     maps CStake "uniqueness" (i.e. serialized COutPoint -or hash stake, for zpiv-)
+                                     maps CStake "uniqueness" (i.e. serialized COutPoint -or hash stake, for zxnk-)
                                      to (amount, prevScript, timeBlockFrom).
-                                     For zpiv prevScript is replaced with serialHash hex string.
+                                     For zxnk prevScript is replaced with serialHash hex string.
                  to_pubKey           (bytes) recipient public key
         :return: block_txes:         ([CTransaction] list)
         """
@@ -828,9 +828,9 @@ class EncoCoinTestFramework():
                  nHeight:           (int) height of the block being produced
                  prevHash:          (string) hex string of the previous block hash
                  stakeableUtxos:    ({bytes --> (int, bytes, int)} dictionary)
-                                    maps CStake "uniqueness" (i.e. serialized COutPoint -or hash stake, for zpiv-)
+                                    maps CStake "uniqueness" (i.e. serialized COutPoint -or hash stake, for zxnk-)
                                     to (amount, prevScript, timeBlockFrom).
-                                    For zpiv prevScript is replaced with serialHash hex string.
+                                    For zxnk prevScript is replaced with serialHash hex string.
                  startTime:         (int) epoch time to be used as blocktime (iterated in solve_stake)
                  privKeyWIF:        (string) private key to be used for staking/signing
                                     If empty string, it will be used the pk from the stake input

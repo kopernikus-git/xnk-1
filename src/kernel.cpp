@@ -13,7 +13,7 @@
 #include "util.h"
 #include "stakeinput.h"
 #include "utilmoneystr.h"
-#include "zpivchain.h"
+#include "zxnkchain.h"
 
 // v1 modifier interval.
 static const int64_t OLD_MODIFIER_INTERVAL = 2087;
@@ -420,7 +420,7 @@ bool ContextualCheckZerocoinStake(int nPreviousBlockHeight, CStakeInput* stake)
     if (nPreviousBlockHeight < Params().Zerocoin_Block_V2_Start())
         return error("%s : zXNK stake block is less than allowed start height", __func__);
 
-    if (CZPivStake* zXNK = dynamic_cast<CZPivStake*>(stake)) {
+    if (CZXnkStake* zXNK = dynamic_cast<CZXnkStake*>(stake)) {
         CBlockIndex* pindexFrom = zXNK->GetIndexFrom();
         if (!pindexFrom)
             return error("%s : failed to get index associated with zXNK stake checksum", __func__);
@@ -456,7 +456,7 @@ bool initStakeInput(const CBlock& block, std::unique_ptr<CStakeInput>& stake, in
         if (spend.getSpendType() != libzerocoin::SpendType::STAKE)
             return error("%s : spend is using the wrong SpendType (%d)", __func__, (int)spend.getSpendType());
 
-        stake = std::unique_ptr<CStakeInput>(new CZPivStake(spend));
+        stake = std::unique_ptr<CStakeInput>(new CZXnkStake(spend));
 
         if (!ContextualCheckZerocoinStake(nPreviousBlockHeight, stake.get()))
             return error("%s : staked zXNK fails context checks", __func__);
@@ -477,9 +477,9 @@ bool initStakeInput(const CBlock& block, std::unique_ptr<CStakeInput>& stake, in
             return error("%s : VerifyScript failed on coinstake %s %s", __func__, tx.GetHash().ToString(), strErr);
         }
 
-        CPivStake* pivInput = new CPivStake();
-        pivInput->SetInput(txPrev, txin.prevout.n);
-        stake = std::unique_ptr<CStakeInput>(pivInput);
+        CXnkStake* xnkInput = new CXnkStake();
+        xnkInput->SetInput(txPrev, txin.prevout.n);
+        stake = std::unique_ptr<CStakeInput>(xnkInput);
     }
     return true;
 }
