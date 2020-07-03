@@ -31,6 +31,11 @@ EncoCoin Core should also work on most other Unix-like systems but is not freque
 Notable Changes
 ==============
 
+Dependencies
+------------
+
+The minimum required version of QT has been increased from 5.0 to 5.5.1 (the [depends system](https://github.com/encocoin/xnk/blob/master/depends/README.md) provides 5.9.7)
+
 Bug Fixes
 --------------
 
