@@ -13,7 +13,6 @@
 #include <QFile>
 #include <QIntValidator>
 #include <QHostAddress>
-#include <QRegExpValidator>
 
 MasterNodeWizardDialog::MasterNodeWizardDialog(WalletModel *model, QWidget *parent) :
     QDialog(parent),
@@ -65,7 +64,10 @@ MasterNodeWizardDialog::MasterNodeWizardDialog(WalletModel *model, QWidget *pare
     initCssEditLine(ui->lineEditPort);
     ui->stackedWidget->setCurrentIndex(pos);
     ui->lineEditPort->setValidator(new QIntValidator(0, 9999999, ui->lineEditPort));
-    if(walletModel->isTestNetwork()){
+    if (walletModel->isRegTestNetwork()) {
+        ui->lineEditPort->setEnabled(false);
+        ui->lineEditPort->setText("51476");
+    } else if (walletModel->isTestNetwork()) {
         ui->lineEditPort->setEnabled(false);
         ui->lineEditPort->setText("51474");
     } else {
@@ -97,7 +99,8 @@ void MasterNodeWizardDialog::showEvent(QShowEvent *event)
     if (ui->btnNext) ui->btnNext->setFocus();
 }
 
-void MasterNodeWizardDialog::onNextClicked(){
+void MasterNodeWizardDialog::onNextClicked()
+{
     switch(pos){
         case 0:{
             ui->stackedWidget->setCurrentIndex(1);
@@ -146,7 +149,8 @@ void MasterNodeWizardDialog::onNextClicked(){
     pos++;
 }
 
-bool MasterNodeWizardDialog::createMN(){
+bool MasterNodeWizardDialog::createMN()
+{
     if (walletModel) {
         /**
          *
@@ -179,7 +183,7 @@ bool MasterNodeWizardDialog::createMN(){
         }
         // TODO: Validate IP address..
         int portInt = portStr.toInt();
-        if (portInt <= 0 && portInt > 999999){
+        if (portInt <= 0 && portInt > 999999) {
             returnStr = tr("Invalid port number");
             return false;
         }
@@ -239,7 +243,7 @@ bool MasterNodeWizardDialog::createMN(){
             // now change the conf
             std::string strConfFile = "masternode.conf";
             std::string strDataDir = GetDataDir().string();
-            if (strConfFile != boost::filesystem::basename(strConfFile) + boost::filesystem::extension(strConfFile)){
+            if (strConfFile != boost::filesystem::basename(strConfFile) + boost::filesystem::extension(strConfFile)) {
                 throw std::runtime_error(strprintf(_("masternode.conf %s resides outside data directory %s"), strConfFile, strDataDir));
             }
 
@@ -292,7 +296,7 @@ bool MasterNodeWizardDialog::createMN(){
                 CWalletTx* walletTx = currentTransaction.getTransaction();
                 std::string txID = walletTx->GetHash().GetHex();
                 int indexOut = -1;
-                for (int i=0; i < (int)walletTx->vout.size(); i++){
+                for (int i=0; i < (int)walletTx->vout.size(); i++) {
                     CTxOut& out = walletTx->vout[i];
                     if (IsValidCollateral(out.nValue, chainActive.Height())) {
                         indexOut = i;
@@ -331,7 +335,11 @@ bool MasterNodeWizardDialog::createMN(){
 
                 mnEntry = masternodeConfig.add(alias, ipAddress+":"+port, mnKeyString, txID, indexOutStr);
 
-                returnStr = tr("Master node created!");
+                // Lock collateral output
+                COutPoint collateralOut(walletTx->GetHash(), indexOut);
+                walletModel->lockCoin(collateralOut);
+
+                returnStr = tr("Master node created! Wait %1 confirmations before starting it.").arg(MASTERNODE_MIN_CONFIRMATIONS);
                 return true;
             } else{
                 returnStr = tr("masternode.conf file doesn't exists");
@@ -343,10 +351,11 @@ bool MasterNodeWizardDialog::createMN(){
     return false;
 }
 
-void MasterNodeWizardDialog::onBackClicked(){
+void MasterNodeWizardDialog::onBackClicked()
+{
     if (pos == 0) return;
     pos--;
-    switch(pos){
+    switch(pos) {
         case 0:{
             ui->stackedWidget->setCurrentIndex(0);
             ui->btnNext->setFocus();
@@ -374,7 +383,8 @@ void MasterNodeWizardDialog::onBackClicked(){
     }
 }
 
-void MasterNodeWizardDialog::inform(QString text){
+void MasterNodeWizardDialog::inform(QString text)
+{
     if (!snackBar)
         snackBar = new SnackBar(nullptr, this);
     snackBar->setText(text);
@@ -383,7 +393,8 @@ void MasterNodeWizardDialog::inform(QString text){
 }
 
 QSize BUTTON_SIZE = QSize(22, 22);
-void MasterNodeWizardDialog::initBtn(std::initializer_list<QPushButton*> args){
+void MasterNodeWizardDialog::initBtn(std::initializer_list<QPushButton*> args)
+{
     for (QPushButton* btn : args) {
         btn->setMinimumSize(BUTTON_SIZE);
         btn->setMaximumSize(BUTTON_SIZE);
@@ -394,7 +405,8 @@ void MasterNodeWizardDialog::initBtn(std::initializer_list<QPushButton*> args){
     }
 }
 
-MasterNodeWizardDialog::~MasterNodeWizardDialog(){
-    if(snackBar) delete snackBar;
+MasterNodeWizardDialog::~MasterNodeWizardDialog()
+{
+    if (snackBar) delete snackBar;
     delete ui;
 }
