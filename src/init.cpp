@@ -1810,15 +1810,18 @@ bool AppInit2()
         }
         fVerifyingBlocks = false;
 
-        if (zwalletMain->GetMasterSeed() != 0) {
-            //Inititalize zPIVWallet
-            uiInterface.InitMessage(_("Syncing zPIV wallet..."));
+        //Inititalize zXNKWallet
+        uiInterface.InitMessage(_("Syncing zXNK wallet..."));
 
-            //Load zerocoin mint hashes to memory
-            pwalletMain->zpivTracker->Init();
-            zwalletMain->LoadMintPoolFromDB();
-            zwalletMain->SyncWithChain();
-        }
+        pwalletMain->InitAutoConvertAddresses();
+
+        bool fEnableZXnkBackups = GetBoolArg("-backupzxnk", true);
+        pwalletMain->setZXnkAutoBackups(fEnableZXnkBackups);
+
+        //Load zerocoin mint hashes to memory
+        pwalletMain->zxnkTracker->Init();
+        zwalletMain->LoadMintPoolFromDB();
+        zwalletMain->SyncWithChain();
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET
     LogPrintf("No wallet compiled in!\n");
