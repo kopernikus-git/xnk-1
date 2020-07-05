@@ -3978,7 +3978,7 @@ bool CWallet::CheckCoinSpend(libzerocoin::CoinSpend& spend, libzerocoin::Accumul
         return error("%s : The transaction did not verify", __func__);
     }
 
-    if (Params().NetworkID() != CBaseChainParams::REGTEST && IsSerialKnown(spend.getCoinSerialNumber())) {
+    if (IsSerialKnown(spend.getCoinSerialNumber())) {
         //Tried to spend an already spent zXNK
         receipt.SetStatus(_("The coin spend has been used"), ZXNK_SPENT_USED_ZXNK);
         uint256 hashSerial = GetSerialHash(spend.getCoinSerialNumber());
