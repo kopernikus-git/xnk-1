@@ -358,8 +358,6 @@ set(WALLET_SOURCES
         ./src/zxnk/zxnktracker.cpp
         ./src/zxnk/zxnkmodule.cpp
         ./src/stakeinput.cpp
-        ./src/genwit.cpp
-        ./src/lightzxnkthread.cpp
         )
 add_library(WALLET_A STATIC ${BitcoinHeaders} ${WALLET_SOURCES})
 target_include_directories(WALLET_A PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
