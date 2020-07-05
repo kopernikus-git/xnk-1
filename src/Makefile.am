@@ -181,10 +181,6 @@ BITCOIN_CORE_H = \
   wallet/wallet_ismine.h \
   wallet/walletdb.h \
   zxnkchain.h \
-  zxnk/accumulators.h \
-  zxnk/accumulatorcheckpoints.h \
-  zxnk/accumulatorcheckpoints.json.h \
-  zxnk/accumulatormap.h \
   zxnk/deterministicmint.h \
   zxnk/mintpool.h \
   zxnk/witness.h \
@@ -281,7 +277,6 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/walletdb.cpp \
   zxnk/deterministicmint.cpp \
   zxnk/zerocoin.cpp \
-  zxnk/accumulators.cpp \
   zxnk/mintpool.cpp \
   zxnk/witness.cpp \
   zxnk/zxnkwallet.cpp \
@@ -367,9 +362,6 @@ endif
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
-  zxnk/accumulators.cpp \
-  zxnk/accumulatorcheckpoints.cpp \
-  zxnk/accumulatormap.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \

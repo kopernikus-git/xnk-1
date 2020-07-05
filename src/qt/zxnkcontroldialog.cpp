@@ -5,7 +5,6 @@
 #include "zxnkcontroldialog.h"
 #include "ui_zxnkcontroldialog.h"
 
-#include "zxnk/accumulators.h"
 #include "main.h"
 #include "walletmodel.h"
 #include "guiutil.h"
@@ -102,7 +101,6 @@ void ZXnkControlDialog::updateList()
 
     //populate rows with mint info
     int nBestHeight = chainActive.Height();
-    //map<CoinDenomination, int> mapMaturityHeight = GetMintMaturityHeight();
     for (const CMintMeta& mint : setMints) {
         // assign this mint to the correct denomination in the tree view
         libzerocoin::CoinDenomination denom = mint.denom;

@@ -360,7 +360,6 @@ void AddWrappedSerialsInflation();
 void RecalculateZXNKSpent();
 void RecalculateZXNKMinted();
 bool RecalculateXNKSupply(int nHeightStart);
-bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string& strError);
 
 // Fake Serial attack Range
 bool isBlockBetweenFakeSerialAttackRange(int nHeight);
