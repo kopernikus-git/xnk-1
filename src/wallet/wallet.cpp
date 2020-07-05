@@ -5012,11 +5012,6 @@ void CWallet::SetNull()
     nAutoCombineThreshold = 0;
 }
 
-int CWallet::getZeromintPercentage()
-{
-    return nZeromintPercentage;
-}
-
 void CWallet::setZWallet(CzXNKWallet* zwallet)
 {
     zwalletMain = zwallet;
@@ -5026,11 +5021,6 @@ void CWallet::setZWallet(CzXNKWallet* zwallet)
 CzXNKWallet* CWallet::getZWallet()
 {
     return zwalletMain;
-}
-
-bool CWallet::isZeromintEnabled()
-{
-    return fEnableZeromint || fEnableAutoConvert;
 }
 
 void CWallet::setZXnkAutoBackups(bool fEnabled)
