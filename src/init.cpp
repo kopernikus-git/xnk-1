@@ -1558,14 +1558,6 @@ bool AppInit2()
                     RecalculateXNKSupply(reindexZerocoin ? Params().Zerocoin_StartHeight() : 1);
                 }
 
-                // Check Recalculation result
-                if(Params().NetworkID() == CBaseChainParams::MAIN && chainHeight > Params().Zerocoin_Block_EndFakeSerial()) {
-                    CBlockIndex* pblockindex = chainActive[Params().Zerocoin_Block_EndFakeSerial() + 1];
-                    CAmount zxnkSupplyCheckpoint = Params().GetSupplyBeforeFakeSerial() + GetWrapppedSerialInflationAmount();
-                    if (pblockindex->GetZerocoinSupply() != zxnkSupplyCheckpoint)
-                        return InitError(strprintf("ZerocoinSupply Recalculation failed: %d vs %d", pblockindex->GetZerocoinSupply()/COIN , zxnkSupplyCheckpoint/COIN));
-                }
-
                 if (!fReindex) {
                     uiInterface.InitMessage(_("Verifying blocks..."));
 

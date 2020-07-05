@@ -6,7 +6,6 @@
 #define EncoCoin_ZXNKTRACKER_H
 
 #include "zerocoin.h"
-#include "witness.h"
 #include "sync.h"
 #include <list>
 

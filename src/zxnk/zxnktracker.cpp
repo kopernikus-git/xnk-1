@@ -10,7 +10,6 @@
 #include "txdb.h"
 #include "wallet/walletdb.h"
 #include "zxnk/zxnkwallet.h"
-#include "witness.h"
 
 
 CzXNKTracker::CzXNKTracker(std::string strWalletFile)
