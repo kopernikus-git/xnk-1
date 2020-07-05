@@ -540,7 +540,7 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
 
     // Find possible candidates (remove delegated)
     std::vector<COutput> vPossibleCoins;
-    AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_10000, false, 1, false, false);
+    AvailableCoins(&vPossibleCoins, true, NULL, false, ONLY_10000, false, 1, false, false);
 
     if (vPossibleCoins.empty()) {
         LogPrintf("CWallet::GetMasternodeVinAndKeys -- Could not locate any valid masternode vin\n");
@@ -2590,7 +2590,7 @@ bool CWallet::CreateCoinStake(
     // Parse utxos into CXnkStakes
     std::list<std::unique_ptr<CStakeInput> > listInputs;
     for (const COutput &out : vCoins) {
-        std::unique_ptr<CPivStake> input(new CPivStake());
+        std::unique_ptr<CXnkStake> input(new CXnkStake());
         input->SetInput((CTransaction) *out.tx, out.i);
         listInputs.emplace_back(std::move(input));
     }
