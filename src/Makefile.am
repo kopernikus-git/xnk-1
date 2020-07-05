@@ -190,6 +190,7 @@ BITCOIN_CORE_H = \
   zxnk/zxnktracker.h \
   zxnk/zxnkwallet.h \
   zxnk/zxnkmodule.h \
+  zxnk/zpos.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h \
   zmq/zmqnotificationinterface.h \
@@ -285,6 +286,7 @@ libbitcoin_wallet_a_SOURCES = \
   zxnk/zxnktracker.cpp \
   stakeinput.cpp \
   zxnk/zxnkmodule.cpp \
+  zxnk/zpos.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library

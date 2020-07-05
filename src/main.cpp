@@ -2018,10 +2018,10 @@ int64_t GetBlockValue(int nHeight)
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
 
-    if (nMoneySupply + nSubsidy >= Params().MaxMoneyOut())
-        nSubsidy = Params().MaxMoneyOut() - nMoneySupply;
+    if (nMoneySupply + nSubsidy >= MAX_MONEY_OUT)
+        nSubsidy = MAX_MONEY_OUT - nMoneySupply;
 
-    if (nMoneySupply >= Params().MaxMoneyOut())
+    if (nMoneySupply >= MAX_MONEY_OUT)
         nSubsidy = 0;
 
     return nSubsidy;
@@ -3937,8 +3937,6 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
                 LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
             pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
             pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
-            if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-                LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
         } else {
             // compute v2 stake modifier
             pindexNew->nStakeModifierV2 = ComputeStakeModifier(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);

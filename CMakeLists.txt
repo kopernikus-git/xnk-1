@@ -357,6 +357,7 @@ set(WALLET_SOURCES
         ./src/zxnk/zxnkwallet.cpp
         ./src/zxnk/zxnktracker.cpp
         ./src/zxnk/zxnkmodule.cpp
+        ./src/zxnk/zpos.cpp
         ./src/stakeinput.cpp
         )
 add_library(WALLET_A STATIC ${BitcoinHeaders} ${WALLET_SOURCES})

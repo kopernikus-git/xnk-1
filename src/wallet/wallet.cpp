@@ -2616,6 +2616,12 @@ bool CWallet::CreateCoinStake(
         // Make sure the wallet is unlocked and shutdown hasn't been requested
         if (IsLocked() || ShutdownRequested()) return false;
 
+        // This should never happen
+        if (stakeInput->IsZXNK()) {
+            LogPrintf("%s: ERROR - zPOS is disabled\n", __func__);
+            continue;
+        }
+
         nCredit = 0;
         uint256 hashProofOfStake = 0;
         nAttempts++;
@@ -2644,22 +2650,20 @@ bool CWallet::CreateCoinStake(
         txNew.vout.insert(txNew.vout.end(), vout.begin(), vout.end());
 
         CAmount nMinFee = 0;
-        if (!stakeInput->IsZXNK()) {
-            // Set output amount
-            int outputs = txNew.vout.size() - 1;
-            CAmount nRemaining = nCredit - nMinFee;
-            if (outputs > 1) {
-                // Split the stake across the outputs
-                CAmount nShare = nRemaining / outputs;
-                for (int i = 1; i < outputs; i++) {
-                    // loop through all but the last one.
-                    txNew.vout[i].nValue = nShare;
-                    nRemaining -= nShare;
-                }
+        // Set output amount
+        int outputs = txNew.vout.size() - 1;
+        CAmount nRemaining = nCredit - nMinFee;
+        if (outputs > 1) {
+            // Split the stake across the outputs
+            CAmount nShare = nRemaining / outputs;
+            for (int i = 1; i < outputs; i++) {
+                // loop through all but the last one.
+                txNew.vout[i].nValue = nShare;
+                nRemaining -= nShare;
             }
-            // put the remaining on the last output (which all into the first if only one output)
-            txNew.vout[outputs].nValue += nRemaining;
         }
+        // put the remaining on the last output (which all into the first if only one output)
+        txNew.vout[outputs].nValue += nRemaining;
 
         // Limit size
         unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
@@ -2667,7 +2671,7 @@ bool CWallet::CreateCoinStake(
             return error("CreateCoinStake : exceeded coinstake size limit");
 
         //Masternode payment
-        FillBlockPayee(txNew, nMinFee, true, stakeInput->IsZXNK());
+        FillBlockPayee(txNew, nMinFee, true, false);
 
         uint256 hashTxOut = txNew.GetHash();
         CTxIn in;
@@ -2678,14 +2682,6 @@ bool CWallet::CreateCoinStake(
             continue;
         }
         txNew.vin.emplace_back(in);
-
-
-        //Mark mints as spent
-        if (stakeInput->IsZXNK()) {
-            CZXnkStake* z = (CZXnkStake*)stakeInput.get();
-            if (!z->MarkSpent(this, txNew.GetHash()))
-                return error("%s: failed to mark mint as used\n", __func__);
-        }
 
         break;
     }
@@ -3995,40 +3991,6 @@ bool CWallet::CheckCoinSpend(libzerocoin::CoinSpend& spend, libzerocoin::Accumul
     return true;
 }
 
-bool CWallet::MintToTxIn(
-        CZerocoinMint mint,
-        const uint256& hashTxOut,
-        CTxIn& newTxIn,
-        CZerocoinSpendReceipt& receipt,
-        libzerocoin::SpendType spendType,
-        CBlockIndex* pindexCheckpoint,
-        bool isPublicSpend)
-{
-    std::map<CBigNum, CZerocoinMint> mapMints;
-    mapMints.insert(std::make_pair(mint.GetValue(), mint));
-    std::vector<CTxIn> vin;
-    if (isPublicSpend) {
-        if (MintsToInputVectorPublicSpend(mapMints, hashTxOut, vin, receipt, spendType, pindexCheckpoint)) {
-            newTxIn = vin[0];
-            return true;
-        }
-    } else {
-        if (MintsToInputVector(mapMints, hashTxOut, vin, receipt, spendType, pindexCheckpoint)) {
-            newTxIn = vin[0];
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool CWallet::MintsToInputVector(std::map<CBigNum, CZerocoinMint>& mapMintsSelected, const uint256& hashTxOut, std::vector<CTxIn>& vin,
-                         CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType, CBlockIndex* pindexCheckpoint)
-{
-    // !TODO: remove me (old spends)
-    return false;
-}
-
 bool CWallet::MintsToInputVectorPublicSpend(std::map<CBigNum, CZerocoinMint>& mapMintsSelected, const uint256& hashTxOut, std::vector<CTxIn>& vin,
                                     CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType, CBlockIndex* pindexCheckpoint)
 {
@@ -4098,7 +4060,7 @@ bool CWallet::MintsToInputVectorPublicSpend(std::map<CBigNum, CZerocoinMint>& ma
     return true;
 }
 
-bool CWallet::CreateZerocoinSpendTransaction(
+bool CWallet::CreateZCPublicSpendTransaction(
         CAmount nValue,
         CWalletTx& wtxNew,
         CReserveKey& reserveKey,
@@ -4108,8 +4070,7 @@ bool CWallet::CreateZerocoinSpendTransaction(
         bool fMintChange,
         bool fMinimizeChange,
         std::list<std::pair<CBitcoinAddress*,CAmount>> addressesTo,
-        CBitcoinAddress* changeAddress,
-        bool isPublicSpend)
+        CBitcoinAddress* changeAddress)
 {
     // Check available funds
     int nStatus = ZXNK_TRX_FUNDS_PROBLEMS;
@@ -4309,15 +4270,9 @@ bool CWallet::CreateZerocoinSpendTransaction(
 
             //add all of the mints to the transaction as inputs
             std::vector<CTxIn> vin;
-            if (isPublicSpend) {
-                if (!MintsToInputVectorPublicSpend(mapSelectedMints, hashTxOut, vin, receipt,
-                                                   libzerocoin::SpendType::SPEND, pindexCheckpoint))
-                    return false;
-            } else {
-                if (!MintsToInputVector(mapSelectedMints, hashTxOut, vin, receipt,
-                                                   libzerocoin::SpendType::SPEND, pindexCheckpoint))
-                    return false;
-            }
+            if (!MintsToInputVectorPublicSpend(mapSelectedMints, hashTxOut, vin, receipt,
+                                               libzerocoin::SpendType::SPEND, pindexCheckpoint))
+                return false;
             txNew.vin = vin;
 
             // Limit size
@@ -4631,8 +4586,7 @@ bool CWallet::SpendZerocoin(
         bool fMintChange,
         bool fMinimizeChange,
         std::list<std::pair<CBitcoinAddress*,CAmount>> addressesTo,
-        CBitcoinAddress* changeAddress,
-        bool isPublicSpend
+        CBitcoinAddress* changeAddress
 )
 {
     // Default: assume something goes wrong. Depending on the problem this gets more specific below
@@ -4645,7 +4599,7 @@ bool CWallet::SpendZerocoin(
 
     CReserveKey reserveKey(this);
     std::vector<CDeterministicMint> vNewMints;
-    if (!CreateZerocoinSpendTransaction(
+    if (!CreateZCPublicSpendTransaction(
             nAmount,
             wtxNew,
             reserveKey,
@@ -4655,8 +4609,7 @@ bool CWallet::SpendZerocoin(
             fMintChange,
             fMinimizeChange,
             addressesTo,
-            changeAddress,
-            isPublicSpend
+            changeAddress
     )) {
         return false;
     }

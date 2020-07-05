@@ -1,4 +1,4 @@
-EncoCoin Core version *v4.0.2* is now available from:  <https://github.com/encocoin-project/encocoin/releases>
+EncoCoin Core *version* is now available from:  <https://github.com/encocoin-project/encocoin/releases>
 
 This is a new revision version release, including various bug fixes and performance improvements, as well as updated translations.
 
@@ -8,7 +8,7 @@ Please report bugs using the issue tracker at github: <https://github.com/encoco
 Recommended Update
 ==============
 
-EncoCoin Core v4.0.2 is NOT a mandatory update, and user can choose to stay with v4.0.0/v4.0.1 if they wish. However, v4.0.2 does contain minor bug fixes and performance improvements to address feedback from the v4.0.0/v4.0.1 versions.
+
 
 How to Upgrade
 ==============
@@ -31,76 +31,66 @@ EncoCoin Core should also work on most other Unix-like systems but is not freque
 Notable Changes
 ==============
 
+(Developers: add your notes here as part of your pull requests whenever possible)
+
 Dependencies
 ------------
 
 The minimum required version of QT has been increased from 5.0 to 5.5.1 (the [depends system](https://github.com/encocoin/xnk/blob/master/depends/README.md) provides 5.9.7)
 
-Bug Fixes
+
+
+
+RPC Changes
 --------------
 
-#### Double counting of delegated values
+### Modified input/output for existing commands
 
-Fixed a bug where the values/amounts for cold staking delegations was being double counted in the UI's available/total balance calculation.
+- "CoinStake" JSON object in `getblock` output is removed, and replaced with the string "hashProofOfStake"
 
-#### Incorrect sorting for transaction loading
+- "isPublicSpend" boolean (optional) input parameter is removed from the following commands:
+ - `createrawzerocoinspend`
+ - `spendzerocoin`
+ - `spendzerocoinmints`
+ - `spendrawzerocoin`
 
-Fixed a bug where The 20,000 limit for loading wallet transactions was incorrectly sorting these transactions, resulting in the **first** 20,000 transactions to be loaded instead of the **most recent** 20,000 transactions.
+ These commands are now able to create only *public* spends (private spends were already enabled only on regtest).
 
-#### No information shown for spent cold stake delegations
+### Removed commands
 
-Fixed a bug where the transaction record for spent cold stake delegations was showing as "No information".
+The following commands have been removed from the RPC interface:
+- `createrawzerocoinstake`
 
-GUI Changes
---------------
 
-#### Add latest block height to top bar
+### Newly introduced commands
 
-The top bar's sync status button now shows the latest block height (number) when hovering over the button.
+The following new commands have been added to the RPC interface:
+- `...`
 
-#### Coin Control copy functions
+Details about each new command can be found below.
 
-The coin control screen now allows for copying the various values to the OS clipboard
 
-*v4.0.2* Change log
+*version* Change log
 ==============
 
-Detailed release notes follow. For convenience in locating the code changes and accompanying discussion, both the pull request and git merge commit are mentioned.
+Detailed release notes follow. This overview includes changes that affect behavior, not code moves, refactors and string updates. For convenience in locating the code changes and accompanying discussion, both the pull request and git merge commit are mentioned.
 
-### Core
-- #1273 `d114eda990` [Core] Update checkpoints for first v7 block (Fuzzbawls)
+### Core Features
+
+### Build System
+
+### P2P Protocol and Network Code
 
 ### GUI
 
-**Keyboard navigation**: dialogs can now be accepted with the `ENTER` (`RETURN`) key, and dismissed with the `ESC` key ([#1392](https://github.com/PIVX-Project/PIVX/pull/1392)).
+### RPC/REST
 
+### Wallet
 
-**Address sorting**: address sorting in "My Addresses" / "Contacts" / "Cold Staking" can now be customized, setting it either by label (default), by address, or by creation date, ascending (default) or descending order.
-Addresses in the dropdown of the "Send Transaction" and "Send Delegation" widgets are now automatically sorted by label with ascending order ([#1393](https://github.com/PIVX-Project/PIVX/pull/1393)).
-
-- #1261 `c02cc4acdd` [Bug][GUI] Double counted delegated balance. (furszy)
-- #1267 `350184044d` [Qt][Bug] Load the most recent instead of the first transactions (Fuzzbawls)
-- #1263 `1d0c1bb81c` [GUI] P2CS transaction divided in two types for visual accuracy. (furszy)
-- #1266 `f659cbf1ef` [GUI] Quick minor GUI startup useful changes. (furszy)
-- #1269 `0771075668` [GUI] CoinControlDialog, every copy to clipboard action implemented. (furszy)
-- #1265 `da7c50eca1` [GUI] Connect P2CSUnlockOwner and P2CSUnlockStaker records to the model (random-zebra)
-- #1268 `912cf67847` [GUI] Display latest block number in the top bar (random-zebra)
-- #1279 `c09cd0d40f` [GUI] Transaction record cold staking fixes. (furszy)
-
-### Wallet Code
-- #1264 `1a12735df5` [Wallet] Don't add P2CS automatically to GetLockedCredit (random-zebra)
-
-### Documentation
-- #1272 `d4a9475e40` [Trivial] Update copyright headers for 4.0.2 (Fuzzbawls)
-
-### RPC Interface
-- #1274 `f5c3552c96` [RPC] Remove extra PoW rounds in 'generate' (random-zebra)
+### Miscellaneous
 
 ## Credits
 
 Thanks to everyone who directly contributed to this release:
-- Fuzzbawls
-- furszy
-- random-zebra
 
 As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/encocoin-project-translations/), the QA team during Testing and the Node hosts supporting our Testnet.
