@@ -344,7 +344,6 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/ZerocoinDefines.h \
   libzerocoin/bignum.cpp \
   libzerocoin/Accumulator.cpp \
-  libzerocoin/AccumulatorProofOfKnowledge.cpp \
   libzerocoin/Coin.cpp \
   libzerocoin/CoinRandomnessSchnorrSignature.cpp \
   libzerocoin/CoinSpend.cpp \
