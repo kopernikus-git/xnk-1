@@ -33,8 +33,13 @@ Notable Changes
 
 (Developers: add your notes here as part of your pull requests whenever possible)
 
+Automatic zPIV backup has been disabled. Thus, the following configuration options have been removed  (either as entries in the pivx.conf file or as startup flags):
+- `autozpivbackup`
+- `backupzpiv`
+- `zpivbackuppath`
 Dependencies
 ------------
+
 
 The minimum required version of QT has been increased from 5.0 to 5.5.1 (the [depends system](https://github.com/encocoin/xnk/blob/master/depends/README.md) provides 5.9.7)
 

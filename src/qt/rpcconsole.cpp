@@ -286,25 +286,17 @@ RPCConsole::RPCConsole(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHi
     // set library version labels
 #ifdef ENABLE_WALLET
     std::string strPathCustom = GetArg("-backuppath", "");
-    std::string strzXNKPathCustom = GetArg("-zxnkbackuppath", "");
     int nCustomBackupThreshold = GetArg("-custombackupthreshold", DEFAULT_CUSTOMBACKUPTHRESHOLD);
 
     if(!strPathCustom.empty()) {
         ui->wallet_custombackuppath->setText(QString::fromStdString(strPathCustom));
         ui->wallet_custombackuppath_label->show();
         ui->wallet_custombackuppath->show();
-    }
-
-    if(!strzXNKPathCustom.empty()) {
-        ui->wallet_customzxnkbackuppath->setText(QString::fromStdString(strzXNKPathCustom));
-        ui->wallet_customzxnkbackuppath_label->setVisible(true);
-        ui->wallet_customzxnkbackuppath->setVisible(true);
-    }
-
-    if((!strPathCustom.empty() || !strzXNKPathCustom.empty()) && nCustomBackupThreshold > 0) {
-        ui->wallet_custombackupthreshold->setText(QString::fromStdString(std::to_string(nCustomBackupThreshold)));
-        ui->wallet_custombackupthreshold_label->setVisible(true);
-        ui->wallet_custombackupthreshold->setVisible(true);
+        if (nCustomBackupThreshold > 0) {
+            ui->wallet_custombackupthreshold->setText(QString::fromStdString(std::to_string(nCustomBackupThreshold)));
+            ui->wallet_custombackupthreshold_label->setVisible(true);
+            ui->wallet_custombackupthreshold->setVisible(true);
+        }
     }
 
     ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));

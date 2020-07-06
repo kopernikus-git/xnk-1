@@ -441,8 +441,6 @@ bool SendWidget::sendZxnk(QList<SendCoinsRecipient> recipients){
 
     if (walletModel->sendZxnk(
             vMintsSelected,
-            true,
-            true,
             receipt,
             outputs,
             changeAddress

@@ -19,7 +19,6 @@ std::vector<CMintMeta> SelectMintsFromList(const CAmount nValueTarget, CAmount& 
 
 int calculateChange(
     int nMaxNumberOfSpends,
-    bool fMinimizeChange,
     const CAmount nValueTarget,
     const std::map<libzerocoin::CoinDenomination, CAmount>& mapOfDenomsHeld,
     std::map<libzerocoin::CoinDenomination, CAmount>& mapOfDenomsUsed);
