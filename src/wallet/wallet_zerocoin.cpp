@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The xnkX developers
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,8 +22,8 @@
 
 std::string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints, const CCoinControl* coinControl)
 {
-    if (!Params().MineBlocksOnDemand())
-        return _("Zerocoin minting available only on regtest/unittest");
+    if (!Params().IsRegTestNet())
+        return _("Zerocoin minting available only on regtest");
 
     // Check amount
     if (nValue <= 0)
@@ -89,11 +89,11 @@ std::string CWallet::MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew,
     return strError;
 }
 
-bool CWallet::CreateZxnkOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint)
+bool CWallet::CreateZXNKOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint)
 {
     // mint a new coin (create Pedersen Commitment) and extract PublicCoin that is shareable from it
     libzerocoin::PrivateCoin coin(Params().Zerocoin_Params(false), denomination, false);
-    zwalletMain->GenerateDeterministicZxnk(denomination, coin, dMint);
+    zwalletMain->GenerateDeterministicZXNK(denomination, coin, dMint);
 
     libzerocoin::PublicCoin pubCoin = coin.getPublicCoin();
 
@@ -159,7 +159,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue,
 
         CTxOut outMint;
         CDeterministicMint dMint;
-        if (!CreateZxnkOutPut(denomination, outMint, dMint)) {
+        if (!CreateZXNKOutPut(denomination, outMint, dMint)) {
             strFailReason = strprintf("%s: failed to create new zxnk output", __func__);
             return error(strFailReason.c_str());
         }
@@ -187,7 +187,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue,
 
 
     //any change that is less than 0.0100000 will be ignored and given as an extra fee
-    //also assume that a zerocoinspend that is minting the change will not have any change that goes to xnk
+    //also assume that a zerocoinspend that is minting the change will not have any change that goes to Xnk
     CAmount nChange = nValueIn - nTotalValue; // Fee already accounted for in nTotalValue
     if (nChange > 1 * CENT) {
         // Fill a vout to ourself using the largest contributing address
@@ -218,10 +218,10 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
         std::list<std::pair<CBitcoinAddress*,CAmount>> addressesTo, CBitcoinAddress* changeAddress)
 {
     // Default: assume something goes wrong. Depending on the problem this gets more specific below
-    int nStatus = Zxnk_SPEND_ERROR;
+    int nStatus = ZXNK_SPEND_ERROR;
 
     if (IsLocked()) {
-        receipt.SetStatus("Error: Wallet locked, unable to create transaction!", Zxnk_WALLET_LOCKED);
+        receipt.SetStatus("Error: Wallet locked, unable to create transaction!", ZXNK_WALLET_LOCKED);
         return false;
     }
 
@@ -244,7 +244,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
     CWalletDB walletdb(pwalletMain->strWalletFile);
     if (!CommitTransaction(wtxNew, reserveKey)) {
         LogPrintf("%s: failed to commit\n", __func__);
-        nStatus = Zxnk_COMMIT_FAILED;
+        nStatus = ZXNK_COMMIT_FAILED;
 
         //reset all mints
         for (CZerocoinMint mint : vMintsSelected) {
@@ -256,7 +256,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
         //erase spends
         for (CZerocoinSpend spend : receipt.GetSpends()) {
             if (!walletdb.EraseZerocoinSpendSerialEntry(spend.GetSerial())) {
-                receipt.SetStatus("Error: It cannot delete coin serial number in wallet", Zxnk_ERASE_SPENDS_FAILED);
+                receipt.SetStatus("Error: It cannot delete coin serial number in wallet", ZXNK_ERASE_SPENDS_FAILED);
             }
 
             //Remove from public zerocoinDB
@@ -266,7 +266,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
         // erase new mints
         for (auto& dMint : vNewMints) {
             if (!walletdb.EraseDeterministicMint(dMint.GetPubcoinHash())) {
-                receipt.SetStatus("Error: Unable to cannot delete zerocoin mint in wallet", Zxnk_ERASE_NEW_MINTS_FAILED);
+                receipt.SetStatus("Error: Unable to cannot delete zerocoin mint in wallet", ZXNK_ERASE_NEW_MINTS_FAILED);
             }
         }
 
@@ -293,7 +293,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
         zxnkTracker->Add(dMint, true);
     }
 
-    receipt.SetStatus("Spend Successful", Zxnk_SPEND_OKAY);  // When we reach this point spending zxnk was successful
+    receipt.SetStatus("Spend Successful", ZXNK_SPEND_OKAY);  // When we reach this point spending zXNK was successful
 
     return true;
 }
@@ -302,7 +302,7 @@ bool CWallet::MintsToInputVectorPublicSpend(std::map<CBigNum, CZerocoinMint>& ma
                                     CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType, CBlockIndex* pindexCheckpoint)
 {
     // Default error status if not changed below
-    receipt.SetStatus(_("Transaction Mint Started"), Zxnk_TXMINT_GENERAL);
+    receipt.SetStatus(_("Transaction Mint Started"), ZXNK_TXMINT_GENERAL);
 
     // Get the chain tip to determine the active public spend version
     int nHeight = 0;
@@ -323,11 +323,11 @@ bool CWallet::MintsToInputVectorPublicSpend(std::map<CBigNum, CZerocoinMint>& ma
         CTransaction txMint;
         uint256 hashBlock;
         if (!GetTransaction(mint.GetTxHash(), txMint, hashBlock)) {
-            receipt.SetStatus(strprintf(_("Unable to find transaction containing mint %s"), mint.GetTxHash().GetHex()), Zxnk_TXMINT_GENERAL);
+            receipt.SetStatus(strprintf(_("Unable to find transaction containing mint %s"), mint.GetTxHash().GetHex()), ZXNK_TXMINT_GENERAL);
             return false;
         } else if (mapBlockIndex.count(hashBlock) < 1) {
             // check that this mint made it into the blockchain
-            receipt.SetStatus(_("Mint did not make it into blockchain"), Zxnk_TXMINT_GENERAL);
+            receipt.SetStatus(_("Mint did not make it into blockchain"), ZXNK_TXMINT_GENERAL);
             return false;
         }
 
@@ -348,21 +348,21 @@ bool CWallet::MintsToInputVectorPublicSpend(std::map<CBigNum, CZerocoinMint>& ma
         }
 
         if (outputIndex == -1) {
-            receipt.SetStatus(_("Pubcoin not found in mint tx"), Zxnk_TXMINT_GENERAL);
+            receipt.SetStatus(_("Pubcoin not found in mint tx"), ZXNK_TXMINT_GENERAL);
             return false;
         }
 
         mint.SetOutputIndex(outputIndex);
         CTxIn in;
-        if(!ZxnkModule::createInput(in, mint, hashTxOut, spendVersion)) {
-            receipt.SetStatus(_("Cannot create public spend input"), Zxnk_TXMINT_GENERAL);
+        if(!ZXNKModule::createInput(in, mint, hashTxOut, spendVersion)) {
+            receipt.SetStatus(_("Cannot create public spend input"), ZXNK_TXMINT_GENERAL);
             return false;
         }
         vin.emplace_back(in);
         receipt.AddSpend(CZerocoinSpend(mint.GetSerialNumber(), 0, mint.GetValue(), mint.GetDenomination(), 0));
     }
 
-    receipt.SetStatus(_("Spend Valid"), Zxnk_SPEND_OKAY); // Everything okay
+    receipt.SetStatus(_("Spend Valid"), ZXNK_SPEND_OKAY); // Everything okay
 
     return true;
 }
@@ -378,19 +378,19 @@ bool CWallet::CreateZCPublicSpendTransaction(
         CBitcoinAddress* changeAddress)
 {
     // Check available funds
-    int nStatus = Zxnk_TRX_FUNDS_PROBLEMS;
+    int nStatus = ZXNK_TRX_FUNDS_PROBLEMS;
     if (nValue > GetZerocoinBalance(true)) {
         receipt.SetStatus(_("You don't have enough Zerocoins in your wallet"), nStatus);
         return false;
     }
 
     if (nValue < 1) {
-        receipt.SetStatus(_("Value is below the smallest available denomination (= 1) of zxnk"), nStatus);
+        receipt.SetStatus(_("Value is below the smallest available denomination (= 1) of zXNK"), nStatus);
         return false;
     }
 
     // Create transaction
-    nStatus = Zxnk_TRX_CREATE;
+    nStatus = ZXNK_TRX_CREATE;
 
     // If not already given pre-selected mints, then select mints from the wallet
     CWalletDB walletdb(pwalletMain->strWalletFile);
@@ -398,10 +398,10 @@ bool CWallet::CreateZCPublicSpendTransaction(
     CAmount nValueSelected = 0;
     int nCoinsReturned = 0; // Number of coins returned in change from function below (for debug)
     int nNeededSpends = 0;  // Number of spends which would be needed if selection failed
-    const int nMaxSpends = Params().Zerocoin_MaxPublicSpendsPerTransaction(); // Maximum possible spends for one zxnk public spend transaction
+    const int nMaxSpends = Params().Zerocoin_MaxPublicSpendsPerTransaction(); // Maximum possible spends for one zXNK public spend transaction
     std::vector<CMintMeta> vMintsToFetch;
     if (vSelectedMints.empty()) {
-        //  All of the zxnk used in the public coin spend are mature by default (everything is public now.. no need to wait for any accumulation)
+        //  All of the zXNK used in the public coin spend are mature by default (everything is public now.. no need to wait for any accumulation)
         setMints = zxnkTracker->ListMints(true, false, true, true); // need to find mints to spend
         if(setMints.empty()) {
             receipt.SetStatus(_("Failed to find Zerocoins in wallet.dat"), nStatus);
@@ -415,7 +415,7 @@ bool CWallet::CreateZCPublicSpendTransaction(
         if(!fWholeNumber)
             nValueToSelect = static_cast<CAmount>(ceil(dValue) * COIN);
 
-        // Select the zxnk mints to use in this spend
+        // Select the zXNK mints to use in this spend
         std::map<libzerocoin::CoinDenomination, CAmount> DenomMap = GetMyZerocoinDistribution();
         std::list<CMintMeta> listMints(setMints.begin(), setMints.end());
         vMintsToFetch = SelectMintsFromList(nValueToSelect, nValueSelected, nMaxSpends,
@@ -499,7 +499,7 @@ bool CWallet::CreateZCPublicSpendTransaction(
 
 
     // Create change if needed
-    nStatus = Zxnk_TRX_CHANGE;
+    nStatus = ZXNK_TRX_CHANGE;
 
     CMutableTransaction txNew;
     wtxNew.BindWallet(this);
@@ -574,7 +574,7 @@ bool CWallet::CreateZCPublicSpendTransaction(
             // Limit size
             unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
             if (nBytes >= MAX_ZEROCOIN_TX_SIZE) {
-                receipt.SetStatus(_("In rare cases, a spend with 7 coins exceeds our maximum allowable transaction size, please retry spend using 6 or less coins"), Zxnk_TX_TOO_LARGE);
+                receipt.SetStatus(_("In rare cases, a spend with 7 coins exceeds our maximum allowable transaction size, please retry spend using 6 or less coins"), ZXNK_TX_TOO_LARGE);
                 return false;
             }
 
@@ -596,7 +596,7 @@ bool CWallet::CreateZCPublicSpendTransaction(
         }
     }
 
-    receipt.SetStatus(_("Transaction Created"), Zxnk_SPEND_OKAY); // Everything okay
+    receipt.SetStatus(_("Transaction Created"), ZXNK_SPEND_OKAY); // Everything okay
 
     return true;
 }
@@ -606,7 +606,7 @@ bool CWallet::CreateZCPublicSpendTransaction(
 CAmount CWallet::GetZerocoinBalance(bool fMatureOnly) const
 {
     if (fMatureOnly) {
-        // This code is not removed just for when we back to use zxnk in the future, for now it's useless,
+        // This code is not removed just for when we back to use zXNK in the future, for now it's useless,
         // every public coin spend is now spendable without need to have new mints on top.
 
         //if (chainActive.Height() > nLastMaturityCheck)
@@ -651,15 +651,15 @@ std::map<libzerocoin::CoinDenomination, CAmount> CWallet::GetMyZerocoinDistribut
     return spread;
 }
 
-// zxnk wallet
+// zXNK wallet
 
-void CWallet::setZWallet(CzxnkWallet* zwallet)
+void CWallet::setZWallet(CzXNKWallet* zwallet)
 {
     zwalletMain = zwallet;
-    zxnkTracker = std::unique_ptr<CzxnkTracker>(new CzxnkTracker(strWalletFile));
+    zxnkTracker = std::unique_ptr<CzXNKTracker>(new CzXNKTracker(strWalletFile));
 }
 
-CzxnkWallet* CWallet::getZWallet()
+CzXNKWallet* CWallet::getZWallet()
 {
     return zwalletMain;
 }
@@ -704,7 +704,7 @@ std::string CWallet::ResetMintZerocoin()
             LogPrintf("%s: failed to archive mint\n", __func__);
     }
 
-    NotifyzxnkReset();
+    NotifyzXNKReset();
 
     std::string strResult = _("ResetMintZerocoin finished: ") + std::to_string(updates) + _(" mints updated, ") + std::to_string(deletions) + _(" mints deleted\n");
     return strResult;
@@ -744,7 +744,7 @@ std::string CWallet::ResetSpentZerocoin()
         }
     }
 
-    NotifyzxnkReset();
+    NotifyzXNKReset();
 
     std::string strResult = _("ResetSpentZerocoin finished: ") + std::to_string(removed) + _(" unconfirmed transactions removed\n");
     return strResult;
