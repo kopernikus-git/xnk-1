@@ -10,6 +10,7 @@
 
 #include "chainparamsbase.h"
 #include "checkpoints.h"
+#include "consensus/params.h"
 #include "primitives/block.h"
 #include "protocol.h"
 #include "uint256.h"
@@ -22,6 +23,11 @@ typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
 struct CDNSSeedData {
     std::string name, host;
     CDNSSeedData(const std::string& strName, const std::string& strHost) : name(strName), host(strHost) {}
+};
+
+struct SeedSpec6 {
+    uint8_t addr[16];
+    uint16_t port;
 };
 
 /**
@@ -46,13 +52,12 @@ public:
         MAX_BASE58_TYPES
     };
 
-    const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
+    const Consensus::Params& GetConsensus() const { return consensus; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
-    const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
-    const uint256& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
-    const uint256& ProofOfStakeLimit(const bool fV2) const { return fV2 ? bnProofOfStakeLimit_V2 : bnProofOfStakeLimit; }
-    int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
+
+    const CBlock& GenesisBlock() const { return genesis; }
+    const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     /** Used to check majorities for block version upgrade */
     int EnforceBlockUpgradeMajority() const { return nEnforceBlockUpgradeMajority; }
     int RejectBlockOutdatedMajority() const { return nRejectBlockOutdatedMajority; }
@@ -61,36 +66,16 @@ public:
 
     /** Used if GenerateBitcoins is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
-    const CBlock& GenesisBlock() const { return genesis; }
     /** Make miner wait to have peers to avoid wasting work */
     bool MiningRequiresPeers() const { return fMiningRequiresPeers; }
     /** Headers first syncing is disabled */
     bool HeadersFirstSyncingActive() const { return fHeadersFirstSyncingActive; };
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
-    /** Allow mining of a min-difficulty block */
-    bool AllowMinDifficultyBlocks() const { return fAllowMinDifficultyBlocks; }
     /** Skip proof-of-work check: allow mining of any difficulty block */
     bool SkipProofOfWorkCheck() const { return fSkipProofOfWorkCheck; }
     /** Make standard checks */
     bool RequireStandard() const { return fRequireStandard; }
-    int64_t TargetSpacing() const { return nTargetSpacing; }
-    int64_t TargetTimespan(const bool fV2 = true) const { return fV2 ? nTargetTimespan_V2 : nTargetTimespan; }
-
-    /** returns the coinbase maturity **/
-    int COINBASE_MATURITY() const { return nMaturity; }
-
-    /** returns the coinstake maturity (min depth required) **/
-    int COINSTAKE_MIN_AGE() const { return nStakeMinAge; }
-    int COINSTAKE_MIN_DEPTH() const { return nStakeMinDepth; }
-    bool HasStakeMinAgeOrDepth(const int contextHeight, const uint32_t contextTime, const int utxoFromBlockHeight, const uint32_t utxoFromBlockTime) const;
-
-    /** Time Protocol V2 **/
-    int BlockStartTimeProtocolV2() const { return nBlockTimeProtocolV2; }
-    bool IsTimeProtocolV2(const int nHeight) const { return nHeight >= BlockStartTimeProtocolV2(); }
-    int TimeSlotLength() const { return nTimeSlotLength; }
-    int FutureBlockTimeDrift(const int nHeight) const;
-    bool IsValidBlockTimeStamp(const int64_t nTime, const int nHeight) const;
 
     /** The masternode count that we will allow the see-saw reward payments to be off by */
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
@@ -135,7 +120,6 @@ public:
 
     /** Height or Time Based Activations **/
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
-    int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int EncoCoinBadBlockTime() const { return nEncoCoinBadBlockTime; }
     int EncoCoinBadBlocknBits() const { return nEncoCoinBadBlocknBits; }
     int Zerocoin_StartHeight() const { return nZerocoinStartHeight; }
@@ -146,9 +130,7 @@ public:
     int Zerocoin_StartTime() const { return nZerocoinStartTime; }
     int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
     int Zerocoin_Block_V2_Start() const { return nBlockZerocoinV2; }
-    bool IsStakeModifierV2(const int nHeight) const { return nHeight >= nBlockStakeModifierlV2; }
     int NewSigsActive(const int nHeight) const { return nHeight >= nBlockEnforceNewMessageSignatures; }
-    int BIP65ActivationHeight() const { return nBIP65ActivationHeight; }
     int Block_V7_StartHeight() const { return nBlockV7StartHeight; }
 
     // fake serial attack
@@ -164,32 +146,19 @@ public:
 protected:
     CChainParams() {}
 
-    uint256 hashGenesisBlock;
+    Consensus::Params consensus;
     MessageStartChars pchMessageStart;
     //! Raw pub key bytes for the broadcast alert signing key.
     std::vector<unsigned char> vAlertPubKey;
     int nDefaultPort;
-    uint256 bnProofOfWorkLimit;
-    uint256 bnProofOfStakeLimit;
-    uint256 bnProofOfStakeLimit_V2;
     int nMaxReorganizationDepth;
-    int nSubsidyHalvingInterval;
     int nEnforceBlockUpgradeMajority;
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
-    int64_t nTargetSpacing;
-    int64_t nTargetTimespan;
-    int64_t nTargetTimespan_V2;
-    int nLastPOWBlock;
     int64_t nEncoCoinBadBlockTime;
     unsigned int nEncoCoinBadBlocknBits;
     int nMasternodeCountDrift;
     int nMaturity;
-    int nStakeMinDepth;
-    int nStakeMinAge;
-    int nFutureTimeDriftPoW;
-    int nFutureTimeDriftPoS;
-    int nTimeSlotLength;
 
     int nModifierUpdateBlock;
     int nMinerThreads;
@@ -200,7 +169,6 @@ protected:
     CBlock genesis;
     std::vector<CAddress> vFixedSeeds;
     bool fMiningRequiresPeers;
-    bool fAllowMinDifficultyBlocks;
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
     bool fSkipProofOfWorkCheck;
@@ -228,7 +196,6 @@ protected:
     int nZerocoinStartTime;
     int nZerocoinRequiredStakeDepth;
     int64_t nProposalEstablishmentTime;
-    int nBIP65ActivationHeight;
 
     int nBlockEnforceSerialRange;
     int nBlockRecalculateAccumulators;
@@ -238,8 +205,6 @@ protected:
     int nBlockZerocoinV2;
     int nBlockDoubleAccumulated;
     int nPublicZCSpends;
-    int nBlockStakeModifierlV2;
-    int nBlockTimeProtocolV2;
     int nBlockEnforceNewMessageSignatures;
     int nBlockV7StartHeight;
     int nBlockLastAccumulatorCheckpoint;
