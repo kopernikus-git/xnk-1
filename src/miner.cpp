@@ -571,7 +571,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("EncoCoinMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("encocoin-miner");
+    util::ThreadRename("encocoin-miner");
     const int64_t nSpacingMillis = Params().GetConsensus().nTargetSpacing * 1000;
     const int last_pow_block = Params().GetConsensus().height_last_PoW;
 

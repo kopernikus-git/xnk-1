@@ -41,6 +41,7 @@
 #include "guiinterface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "util/threadnames.h"
 #include "validationinterface.h"
 #include "zxnkchain.h"
 
@@ -195,7 +196,7 @@ void PrepareShutdown()
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
-    RenameThread("encocoin-shutoff");
+    util::ThreadRename("encocoin-shutoff");
     mempool.AddTransactionsUpdated(1);
     StopHTTPRPC();
     StopREST();
@@ -646,7 +647,7 @@ static void BlockSizeNotifyCallback(int size, const uint256& hashNewTip)
 
 static bool fHaveGenesis = false;
 static std::mutex cs_GenesisWait;
-static CConditionVariable condvar_GenesisWait;
+static std::condition_variable condvar_GenesisWait;
 
 static void BlockNotifyGenesisWait(bool, const CBlockIndex *pBlockIndex)
 {
@@ -678,7 +679,7 @@ struct CImportingNow {
 
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 {
-    RenameThread("encocoin-loadblk");
+    util::ThreadRename("encocoin-loadblk");
 
     // -reindex
     if (fReindex) {
