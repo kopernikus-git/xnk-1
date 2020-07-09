@@ -1,7 +1,7 @@
-// Copyright (c) 2019 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "qt/encocoin/sendmultirow.h"
 #include "qt/encocoin/forms/ui_sendmultirow.h"
 
@@ -83,7 +83,9 @@ CAmount SendMultiRow::getAmountValue(QString amount){
     return isValid ? value : -1;
 }
 
-bool SendMultiRow::addressChanged(const QString& str){
+bool SendMultiRow::addressChanged(const QString& str)
+{
+    ui->lineEditDescription->clear();
     if(!str.isEmpty()) {
         QString trimmedStr = str.trimmed();
         bool valid = (this->onlyStakingAddressAccepted) ? walletModel->validateStakingAddress(trimmedStr) : walletModel->validateAddress(trimmedStr);
