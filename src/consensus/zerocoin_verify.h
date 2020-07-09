@@ -22,7 +22,7 @@ bool CheckPublicCoinSpendVersion(int version);
 bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight, const uint256& hashBlock);
 bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight, const uint256& hashBlock);
 void AddWrappedSerialsInflation();
-bool RecalculateXNKSupply(int nHeightStart);
+bool RecalculateXNKSupply(int nHeightStart), bool fSkipZxnk = true);
 bool UpdateZXNKSupply(const CBlock& block, CBlockIndex* pindex, bool fJustCheck);
 CAmount GetInvalidUTXOValue();
 

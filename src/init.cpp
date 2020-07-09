@@ -5,7 +5,7 @@
 // Copyright (c) 2013-2014 The NovaCoin Developers
 // Copyright (c) 2014-2018 The BlackCoin Developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2020 The EncoCoin developers
+// Copyright (c) 2020 	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1552,7 +1552,7 @@ bool AppInit2()
                 // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
                 if (GetBoolArg("-reindexmoneysupply", false) || reindexZerocoin) {
                     // Recalculate from the zerocoin activation or from scratch.
-                    RecalculateXNKSupply(reindexZerocoin ? consensus.height_start_ZC : 1);
+                    RecalculateXNKSupply((reindexZerocoin ? consensus.height_start_ZC : 1), false);
                 }
 
                 if (!fReindex) {
