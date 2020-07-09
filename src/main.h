@@ -4,7 +4,8 @@
 // Copyright (c) 2011-2013 The PPCoin developers
 // Copyright (c) 2013-2014 The NovaCoin Developers
 // Copyright (c) 2014-2018 The BlackCoin Developers
-// Copyright (c) 2015-2020 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -281,24 +282,10 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
 /** Apply the effects of this transaction on the UTXO set represented by view */
 void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
 
-/** Context-independent validity checks */
-bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidationState& state, bool fFakeSerialAttack = false);
-bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight, const uint256& hashBlock);
-bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight, const uint256& hashBlock);
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx, CTransaction& tx);
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
 bool ValidOutPoint(const COutPoint& out, int nHeight);
-void AddWrappedSerialsInflation();
-bool RecalculateXNKSupply(int nHeightStart);
-
-// Fake Serial attack Range
-bool isBlockBetweenFakeSerialAttackRange(int nHeight);
-
-// Public coin spend
-bool CheckPublicCoinSpendEnforced(int blockHeight, bool isPublicSpend);
-int CurrentPublicCoinSpendVersion();
-bool CheckPublicCoinSpendVersion(int version);
 
 /**
  * Check if transaction will be final in the next block to be created.

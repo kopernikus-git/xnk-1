@@ -1,18 +1,18 @@
 // Copyright (c) 2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "wallet/wallet.h"
 
 #include "init.h"
 #include "coincontrol.h"
+#include "consensus/zerocoin_verify.h"
 #include "denomination_functions.h"
 #include "primitives/transaction.h"
 #include "script/sign.h"
 #include "utilmoneystr.h"
 #include "zxnkchain.h"
 #include "zxnk/deterministicmint.h"
-
 
 /*
  * Legacy Zerocoin Wallet
