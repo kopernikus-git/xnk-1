@@ -37,6 +37,10 @@ Automatic zXNK backup has been disabled. Thus, the following configuration optio
 - `autozxnkbackup`
 - `backupzxnk`
 - `zxnkbackuppath`
+
+### Stake-Split threshold
+The stake split threshold is no longer required to be integer. It can be a fractional amount. A threshold value of 0 disables the stake-split functionality.
+
 Dependencies
 ------------
 
@@ -59,7 +63,15 @@ RPC Changes
  - `spendzerocoinmints`
  - `spendrawzerocoin`
 
+
  These commands are now able to create only *public* spends (private spends were already enabled only on regtest).
+
+- "mintchange" and "minimizechange" boolean input parameters are removed from the following commands:
+ - `spendzerocoin`
+
+ Mints are disabled, therefore it is no longer possible to mint the change of a zerocoin spend. The change is minimized by default.
+
+- `setstakesplitthreshold` now accepts decimal amounts. If the provided value is `0`, split staking gets disabled. `getstakesplitthreshold` returns a double.
 
 ### Removed commands
 
