@@ -1754,13 +1754,15 @@ bool AppInit2()
         }
         fVerifyingBlocks = false;
 
-        //Inititalize zXNKWallet
-        uiInterface.InitMessage(_("Syncing zXNK wallet..."));
+        if (zwalletMain->GetMasterSeed() != 0) {
+            //Inititalize zXNKWallet
+            uiInterface.InitMessage(_("Syncing zXNK wallet..."));
 
-        //Load zerocoin mint hashes to memory
-        pwalletMain->zxnkTracker->Init();
-        zwalletMain->LoadMintPoolFromDB();
-        zwalletMain->SyncWithChain();
+            //Load zerocoin mint hashes to memory
+            pwalletMain->zxnkTracker->Init();
+            zwalletMain->LoadMintPoolFromDB();
+            zwalletMain->SyncWithChain();
+        }
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET
     LogPrintf("No wallet compiled in!\n");
