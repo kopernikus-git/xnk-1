@@ -79,6 +79,7 @@ RPC Changes
 The following commands have been removed from the RPC interface:
 - `createrawzerocoinstake`
 - `getmintsinblocks`
+- `reservebalance`
 
 
 ### Newly introduced commands
@@ -105,6 +106,9 @@ Detailed release notes follow. This overview includes changes that affect behavi
 ### RPC/REST
 
 ### Wallet
+
+The `-reservebalance` configuration/startup option has been removed
+
 
 ### Miscellaneous
 
