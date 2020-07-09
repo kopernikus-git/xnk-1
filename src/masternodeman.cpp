@@ -1,8 +1,8 @@
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2019 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020 	   The EncoCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "masternodeman.h"
 #include "activemasternode.h"
 #include "addrman.h"
@@ -399,7 +399,7 @@ void CMasternodeMan::CountNetworks(int protocolVersion, int& ipv4, int& ipv6, in
         std::string strHost;
         int port;
         SplitHostPort(mn.addr.ToString(), port, strHost);
-        CNetAddr node = CNetAddr(strHost, false);
+        CNetAddr node = CNetAddr(strHost);
         int nNetwork = node.GetNetwork();
         switch (nNetwork) {
             case 1 :
