@@ -101,6 +101,8 @@ Detailed release notes follow. This overview includes changes that affect behavi
 
 ### P2P Protocol and Network Code
 
+The p2p alert system has been removed and the 'alert' message is no longer supported.
+
 ### GUI
 
 ### RPC/REST

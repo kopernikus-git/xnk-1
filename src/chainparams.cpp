@@ -220,7 +220,6 @@ public:
         pchMessageStart[1] = 0x2c;
         pchMessageStart[2] = 0x9b;
         pchMessageStart[3] = 0xcf;
-        vAlertPubKey = ParseHex("0000098d3ba6ba6e7423fa5cbd6a89e0a9a5348f88d332b44a5cb1a8b7ed2c1eaa335fc8dc4f012cb8241cc0bdafd6ca70c5f5448916e4e6f511bcd746ed57dc50");
         nDefaultPort = 43013;
 
         // Note that of those with the service bits flag, most only support a subset of possible options
@@ -343,7 +342,6 @@ public:
         pchMessageStart[1] = 0x76;
         pchMessageStart[2] = 0x65;
         pchMessageStart[3] = 0xba;
-        vAlertPubKey = ParseHex("000010e83b2703ccf322f7dbd62dd5855ac7c10bd055814ce121ba32607d573b8810c02c0582aed05b4deb9c4b77b26d92428c61256cd42774babea0a073b2ed0c9");
         nDefaultPort = 51474;
 
         vFixedSeeds.clear();
