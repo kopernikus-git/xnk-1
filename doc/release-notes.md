@@ -33,13 +33,14 @@ Notable Changes
 
 (Developers: add your notes here as part of your pull requests whenever possible)
 
-Automatic zXNK backup has been disabled. Thus, the following configuration options have been removed  (either as entries in the xnkx.conf file or as startup flags):
+Automatic zXNK backup has been disabled. Thus, the following configuration options have been removed  (either as entries in the encocoin.conf file or as startup flags):
 - `autozxnkbackup`
 - `backupzxnk`
 - `zxnkbackuppath`
 
 ### Stake-Split threshold
 The stake split threshold is no longer required to be integer. It can be a fractional amount. A threshold value of 0 disables the stake-split functionality.
+The default value for the stake-split threshold has been lowered from 2000 XNK, down  to 500 XNK.
 
 Dependencies
 ------------
