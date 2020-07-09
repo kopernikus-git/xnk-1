@@ -1,7 +1,7 @@
-// Copyright (c) 2019-2020 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "qt/encocoin/privacywidget.h"
 #include "qt/encocoin/forms/ui_privacywidget.h"
 #include "qt/encocoin/qtutils.h"
@@ -354,12 +354,13 @@ void PrivacyWidget::updateDenomsSupply(){
 
     std::set<CMintMeta> vMints;
     walletModel->listZerocoinMints(vMints, true, false, true, true);
+    const int nRequiredConfs = Params().GetConsensus().ZC_MinMintConfirmations;
 
     for (auto& meta : vMints){
         // All denominations
         mapDenomBalances.at(meta.denom)++;
 
-        if (!meta.nHeight || chainActive.Height() - meta.nHeight <= Params().Zerocoin_MintRequiredConfirmations()) {
+        if (!meta.nHeight || chainActive.Height() - meta.nHeight <= nRequiredConfs) {
             // All unconfirmed denominations
             mapUnconfirmed.at(meta.denom)++;
         } else {

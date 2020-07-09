@@ -1,7 +1,7 @@
-// Copyright (c) 2018-2019 The EncoCoin developers
+// Copyright (c) 2018-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "governancepage.h"
 #include "ui_governancepage.h"
 
@@ -90,9 +90,10 @@ void GovernancePage::updateProposalList()
         pindexPrev = chainActive.Tip();
     }
     if (!pindexPrev) return;
-    int nBlockStart = pindexPrev->nHeight - pindexPrev->nHeight % Params().GetBudgetCycleBlocks() + Params().GetBudgetCycleBlocks();
+    const int nBlocksPerCycle = Params().GetConsensus().nBudgetCycleBlocks;
+    int nBlockStart = pindexPrev->nHeight - pindexPrev->nHeight % nBlocksPerCycle + nBlocksPerCycle;
     int nBlocksLeft = nBlockStart - pindexPrev->nHeight;
-    int nBlockEnd = nBlockStart + Params().GetBudgetCycleBlocks() - 1;
+    int nBlockEnd = nBlockStart + nBlocksPerCycle - 1;
     int mnCount = mnodeman.CountEnabled(ActiveProtocol());
 
     for (CBudgetProposal* pbudgetProposal : proposalsList) {

@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2019 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,7 +23,6 @@ CMasternodePayments masternodePayments;
 CCriticalSection cs_vecPayments;
 CCriticalSection cs_mapMasternodeBlocks;
 CCriticalSection cs_mapMasternodePayeeVotes;
-
 //
 // CMasternodePaymentDB
 //
@@ -248,7 +248,7 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
 
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything
         //super blocks will always be on these blocks, max 100 per budgeting
-        if (nHeight % Params().GetBudgetCycleBlocks() < 100) {
+        if (nHeight % Params().GetConsensus().nBudgetCycleBlocks < 100) {
             return true;
         } else {
             if (nMinted > nExpectedValue) {
@@ -468,7 +468,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
         }
 
         // reject old signatures 6000 blocks after hard-fork
-        if (winner.nMessVersion != MessageVersion::MESS_VER_HASH && Params().NewSigsActive(winner.nBlockHeight - 6000)) {
+        if (winner.nMessVersion != MessageVersion::MESS_VER_HASH && Params().GetConsensus().IsMessSigV2(winner.nBlockHeight - 6000)) {
             LogPrintf("%s : nMessVersion=%d not accepted anymore at block %d\n", __func__, winner.nMessVersion, nHeight);
             return;
         }
@@ -586,16 +586,17 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     // 100 blocks transition period for smoothness
     CAmount prevReward = GetBlockValue((nBlockHeight > 51) ? (nBlockHeight - 50) : nBlockHeight);
     CAmount nextReward = GetBlockValue(nBlockHeight + 50);
-
+    const int mn_count_drift = Params().GetConsensus().nMasternodeCountDrift;
+    
     if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
         // Get a stable number of masternodes by ignoring newly activated (< 8000 sec old) masternodes
-        nMasternode_Drift_Count = mnodeman.stable_size() + Params().MasternodeCountDrift();
+        nMasternode_Drift_Count = mnodeman.stable_size() + mn_count_drift;
     }
     else {
         //account for the fact that all peers do not see the same masternode count. A allowance of being off our masternode count is given
         //we only need to look at an increased masternode count because as count increases, the reward decreases. This code only checks
         //for mnPayment >= required, so it only makes sense to check the max node count allowed.
-        nMasternode_Drift_Count = mnodeman.size() + Params().MasternodeCountDrift();
+        nMasternode_Drift_Count = mnodeman.size() + mn_count_drift;
     }
 
     // 100 blocks transition period for smoothness
@@ -771,7 +772,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
         return false;
     }
 
-    const bool fNewSigs = Params().NewSigsActive(nBlockHeight - 20);
+    const bool fNewSigs = Params().GetConsensus().IsMessSigV2(nBlockHeight - 20);
 
     LogPrint("masternode","CMasternodePayments::ProcessBlock() - Signing Winner\n");
     if (newWinner.Sign(keyMasternode, pubKeyMasternode, fNewSigs)) {

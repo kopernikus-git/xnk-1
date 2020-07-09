@@ -2,7 +2,6 @@
 // Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "zerocoin_verify.h"
 
 #include "chainparams.h"
@@ -38,6 +37,7 @@ bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidati
     uint256 hashTxOut = txTemp.GetHash();
 
     bool fValidated = false;
+    const Consensus::Params& consensus = Params().GetConsensus();
     std::set<CBigNum> serials;
     CAmount nTotalRedeemed = 0;
     for (const CTxIn& txin : tx.vin) {
@@ -53,7 +53,7 @@ bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidati
             if(!GetOutput(txin.prevout.hash, txin.prevout.n, state, prevOut)){
                 return state.DoS(100, error("CheckZerocoinSpend(): public zerocoin spend prev output not found, prevTx %s, index %d", txin.prevout.hash.GetHex(), txin.prevout.n));
             }
-            libzerocoin::ZerocoinParams* params = Params().Zerocoin_Params(false);
+            libzerocoin::ZerocoinParams* params = consensus.Zerocoin_Params(false);
             PublicCoinSpend publicSpend(params);
             if (!ZXNKModule::parseCoinSpend(txin, tx, prevOut, publicSpend)){
                 return state.DoS(100, error("CheckZerocoinSpend(): public zerocoin spend parse failed"));
@@ -76,7 +76,7 @@ bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidati
             return state.DoS(100, error("Zerocoinspend does not use the same txout that was used in the SoK"));
 
         if (isPublicSpend) {
-            libzerocoin::ZerocoinParams* params = Params().Zerocoin_Params(false);
+            libzerocoin::ZerocoinParams* params = consensus.Zerocoin_Params(false);
             PublicCoinSpend ret(params);
             if (!ZXNKModule::validateInput(txin, prevOut, tx, ret)){
                 return state.DoS(100, error("CheckZerocoinSpend(): public zerocoin spend did not verify"));
@@ -105,11 +105,12 @@ bool isBlockBetweenFakeSerialAttackRange(int nHeight)
     if (Params().NetworkID() != CBaseChainParams::MAIN)
         return false;
 
-    return nHeight <= Params().Zerocoin_Block_EndFakeSerial();
+    return nHeight <= Params().GetConsensus().height_last_ZC_WrappedSerials;
 }
 
-bool CheckPublicCoinSpendEnforced(int blockHeight, bool isPublicSpend) {
-    if (blockHeight >= Params().Zerocoin_Block_Public_Spend_Enabled()) {
+bool CheckPublicCoinSpendEnforced(int blockHeight, bool isPublicSpend)
+{
+    if (blockHeight >= Params().GetConsensus().height_start_ZC_PublicSpends) {
         // reject old coin spend
         if (!isPublicSpend) {
             return error("%s: failed to add block with older zc spend version", __func__);
@@ -149,7 +150,7 @@ bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::Coi
 bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight, const uint256& hashBlock)
 {
     //Check to see if the zXNK is properly signed
-    if (nHeight >= Params().Zerocoin_Block_V2_Start()) {
+    if (nHeight >= Params().GetConsensus().height_start_ZC_SerialsV2) {
         try {
             if (!spend->HasValidSignature())
                 return error("%s: V2 zXNK spend does not have a valid signature\n", __func__);
@@ -161,9 +162,9 @@ bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const lib
                 LogPrintf("%s: Invalid serial detected within range in block %d\n", __func__, nHeight);
         }
 
-        libzerocoin::SpendType expectedType = libzerocoin::SPEND;
+        libzerocoin::SpendType expectedType = libzerocoin::SpendType::SPEND;
         if (tx.IsCoinStake())
-            expectedType = libzerocoin::STAKE;
+            expectedType = libzerocoin::SpendType::STAKE;
         if (spend->getSpendType() != expectedType) {
             return error("%s: trying to spend zXNK without the correct spend type. txid=%s\n", __func__,
                          tx.GetHash().GetHex());
@@ -173,7 +174,7 @@ bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const lib
     bool fUseV1Params = spend->getCoinVersion() < libzerocoin::PrivateCoin::PUBKEY_VERSION;
 
     //Reject serial's that are not in the acceptable value range
-    if (!spend->HasValidSerial(Params().Zerocoin_Params(fUseV1Params)))  {
+    if (!spend->HasValidSerial(Params().GetConsensus().Zerocoin_Params(fUseV1Params)))  {
         // Up until this block our chain was not checking serials correctly..
         if (!isBlockBetweenFakeSerialAttackRange(nHeight))
             return error("%s : zXNK spend with serial %s from tx %s is not in valid range\n", __func__,
@@ -188,16 +189,17 @@ bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const lib
 
 void AddWrappedSerialsInflation()
 {
-    CBlockIndex* pindex = chainActive[Params().Zerocoin_Block_EndFakeSerial()];
+    const int height_end_attack = Params().GetConsensus().height_last_ZC_WrappedSerials;
+    CBlockIndex* pindex = chainActive[height_end_attack];
+    if (!pindex) return;
     const int chainHeight = chainActive.Height();
-    if (pindex->nHeight > chainHeight)
-        return;
+    if (pindex->nHeight > chainHeight) return;
 
     uiInterface.ShowProgress(_("Adding Wrapped Serials supply..."), 0);
     while (true) {
         if (pindex->nHeight % 1000 == 0) {
             LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
-            int percent = std::max(1, std::min(99, (int)((double)(pindex->nHeight - Params().Zerocoin_Block_EndFakeSerial()) * 100 / (chainHeight - Params().Zerocoin_Block_EndFakeSerial()))));
+            int percent = std::max(1, std::min(99, (int)((double)(pindex->nHeight - height_end_attack) * 100 / (chainHeight - height_end_attack))));
             uiInterface.ShowProgress(_("Adding Wrapped Serials supply..."), percent);
         }
 
@@ -224,7 +226,7 @@ bool RecalculateXNKSupply(int nHeightStart)
 
     CBlockIndex* pindex = chainActive[nHeightStart];
     CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
-    if (nHeightStart == Params().Zerocoin_StartHeight())
+    if (nHeightStart == Params().GetConsensus().height_start_ZC)
         nSupplyPrev = CAmount(5449796547496199);
 
     uiInterface.ShowProgress(_("Recalculating XNK supply..."), 0);
@@ -270,11 +272,12 @@ bool RecalculateXNKSupply(int nHeightStart)
         nSupplyPrev = pindex->nMoneySupply;
 
         // Add fraudulent funds to the supply and remove any recovered funds.
-        if (pindex->nHeight == Params().Zerocoin_Block_RecalculateAccumulators()) {
+        if (pindex->nHeight == Params().GetConsensus().height_ZC_RecalcAccumulators) {
+            const CAmount nInvalidAmountFiltered = 0*COIN;    //Amount of invalid coins filtered through exchanges, that should be considered valid
             LogPrintf("%s : Original money supply=%s\n", __func__, FormatMoney(pindex->nMoneySupply));
 
-            pindex->nMoneySupply += Params().InvalidAmountFiltered();
-            LogPrintf("%s : Adding filtered funds to supply + %s : supply=%s\n", __func__, FormatMoney(Params().InvalidAmountFiltered()), FormatMoney(pindex->nMoneySupply));
+            pindex->nMoneySupply += nInvalidAmountFiltered;
+            LogPrintf("%s : Adding filtered funds to supply + %s : supply=%s\n", __func__, FormatMoney(nInvalidAmountFiltered), FormatMoney(pindex->nMoneySupply));
 
             CAmount nLocked = GetInvalidUTXOValue();
             pindex->nMoneySupply -= nLocked;
@@ -295,7 +298,7 @@ bool RecalculateXNKSupply(int nHeightStart)
 bool UpdateZXNKSupply(const CBlock& block, CBlockIndex* pindex, bool fJustCheck)
 {
     std::list<CZerocoinMint> listMints;
-    bool fFilterInvalid = pindex->nHeight >= Params().Zerocoin_Block_RecalculateAccumulators();
+    bool fFilterInvalid = pindex->nHeight >= Params().GetConsensus().height_ZC_RecalcAccumulators;
     BlockToZerocoinMintList(block, listMints, fFilterInvalid);
     std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block, fFilterInvalid);
 
@@ -351,8 +354,9 @@ bool UpdateZXNKSupply(const CBlock& block, CBlockIndex* pindex, bool fJustCheck)
 
     // Update Wrapped Serials amount
     // A one-time event where only the zXNK supply was off (due to serial duplication off-chain on main net)
-    if (Params().NetworkID() == CBaseChainParams::MAIN && pindex->nHeight == Params().Zerocoin_Block_EndFakeSerial() + 1
-            && pindex->GetZerocoinSupply() < Params().GetSupplyBeforeFakeSerial() + GetWrapppedSerialInflationAmount()) {
+    const Consensus::Params& consensus = Params().GetConsensus();
+    if (Params().NetworkID() == CBaseChainParams::MAIN && pindex->nHeight == consensus.height_last_ZC_WrappedSerials + 1
+            && pindex->GetZerocoinSupply() < consensus.ZC_WrappedSerialsSupply + GetWrapppedSerialInflationAmount()) {
         for (auto denom : libzerocoin::zerocoinDenomList) {
             pindex->mapZerocoinSupply.at(denom) += GetWrapppedSerialInflation(denom);
         }

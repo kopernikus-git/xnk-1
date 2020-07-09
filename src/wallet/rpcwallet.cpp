@@ -1,7 +1,8 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2020 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,7 +31,6 @@
 
 #include <univalue.h>
 #include <iostream>
-
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
@@ -593,9 +593,9 @@ UniValue CreateColdStakeDelegation(const UniValue& params, CWalletTx& wtxNew, CR
 
     // Get Amount
     CAmount nValue = AmountFromValue(params[1]);
-    if (nValue < Params().GetMinColdStakingAmount())
+    if (nValue < MIN_COLDSTAKING_AMOUNT)
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid amount (%d). Min amount: %d",
-                nValue, Params().GetMinColdStakingAmount()));
+                nValue, MIN_COLDSTAKING_AMOUNT));
 
     // include already delegated coins
     bool fUseDelegated = false;
@@ -4131,7 +4131,7 @@ UniValue generatemintlist(const UniValue& params, bool fHelp)
     UniValue arrRet(UniValue::VARR);
     for (int i = nCount; i < nCount + nRange; i++) {
         libzerocoin::CoinDenomination denom = libzerocoin::CoinDenomination::ZQ_ONE;
-        libzerocoin::PrivateCoin coin(Params().Zerocoin_Params(false), denom, false);
+        libzerocoin::PrivateCoin coin(Params().GetConsensus().Zerocoin_Params(false), denom, false);
         CDeterministicMint dMint;
         zwallet->GenerateMint(i, denom, coin, dMint);
         UniValue obj(UniValue::VOBJ);
@@ -4295,7 +4295,7 @@ UniValue spendrawzerocoin(const UniValue& params, bool fHelp)
     privkey = key.GetPrivKey();
 
     // Create the coin associated with these secrets
-    libzerocoin::PrivateCoin coin(Params().Zerocoin_Params(false), denom, serial, randomness);
+    libzerocoin::PrivateCoin coin(Params().GetConsensus().Zerocoin_Params(false), denom, serial, randomness);
     coin.setPrivKey(privkey);
     coin.setVersion(libzerocoin::PrivateCoin::CURRENT_VERSION);
 
@@ -4315,7 +4315,7 @@ UniValue spendrawzerocoin(const UniValue& params, bool fHelp)
         bool found = false;
         {
             CBlockIndex* pindex = chainActive.Tip();
-            while (!found && pindex && pindex->nHeight >= Params().Zerocoin_StartHeight()) {
+            while (!found && pindex && pindex->nHeight >= Params().GetConsensus().height_start_ZC) {
                 LogPrintf("%s : Checking block %d...\n", __func__, pindex->nHeight);
                 CBlock block;
                 if (!ReadBlockFromDisk(block, pindex))

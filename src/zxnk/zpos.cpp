@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2019 The PIVX developers
+// Copyright (c) 2017-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zxnk/zpos.h"
-
 
 /*
  * LEGACY: Kept for IBD in order to verify zerocoin stakes occurred when zPoS was active
@@ -29,10 +29,10 @@ CBlockIndex* CLegacyZXnkStake::GetIndexFrom()
     }
 
     // Not found. Scan the chain.
-    CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
+    const Consensus::Params& consensus = Params().GetConsensus();
+    CBlockIndex* pindex = chainActive[consensus.height_start_ZC];
     if (!pindex) return nullptr;
-    const int last_block = Params().Zerocoin_Block_Last_Checkpoint();
-    while (pindex && pindex->nHeight <= last_block) {
+    while (pindex && pindex->nHeight <= consensus.height_last_ZC_AccumCheckpoint) {
         if (ParseAccChecksum(pindex->nAccumulatorCheckpoint, denom) == nChecksum) {
             // Found. Save to database and return
             zerocoinDB->WriteAccChecksum(nChecksum, denom, pindex->nHeight);

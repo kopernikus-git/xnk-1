@@ -3,7 +3,8 @@
 // Copyright (c) 2011-2013 The PPCoin developers
 // Copyright (c) 2013-2014 The NovaCoin Developers
 // Copyright (c) 2014-2018 The BlackCoin Developers
-// Copyright (c) 2015-2019 The EncoCoin developers
+// Copyright (c) 2015-2019 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -274,7 +275,7 @@ public:
 
     /**
      * Returns true if there are nRequired or more blocks of minVersion or above
-     * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
+     * in the last consensus.nToCheckBlockUpgradeMajority blocks, starting at pstart
      * and going backwards.
      */
     static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired);
@@ -478,7 +479,7 @@ public:
     const CBlockIndex* FindFork(const CBlockIndex* pindex) const;
 
     /** Check if new message signatures are active **/
-    bool NewSigsActive() { return Params().NewSigsActive(Height()); }
+    bool NewSigsActive() { return Params().GetConsensus().IsMessSigV2(Height()); }
 };
 
 #endif // BITCOIN_CHAIN_H

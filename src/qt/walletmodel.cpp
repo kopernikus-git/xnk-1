@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2020 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,7 +28,6 @@
 #include <QDebug>
 #include <QSet>
 #include <QTimer>
-
 
 WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* parent) : QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
                                                                                          transactionTableModel(0),
@@ -94,7 +94,7 @@ CAmount WalletModel::getBalance(const CCoinControl* coinControl) const
 
 CAmount WalletModel::getMinColdStakingAmount() const
 {
-    return Params().GetMinColdStakingAmount();
+    return MIN_COLDSTAKING_AMOUNT;
 }
 
 CAmount WalletModel::getUnconfirmedBalance() const
