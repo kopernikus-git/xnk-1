@@ -523,7 +523,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 
     // Found a solution
     {
-        WAIT_LOCK lock(g_best_block_mutex, lock);
+        WAIT_LOCK(g_best_block_mutex, lock);
         if (pblock->hashPrevBlock !=  chainActive.Tip()->GetBlockHash())
             return error("EncoCoinMiner : generated block is stale");
     }
