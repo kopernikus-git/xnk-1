@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2019 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,7 +17,6 @@
 
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
-
 
 class CMasternodeMan;
 
@@ -51,10 +51,10 @@ class CMasternodeMan
 {
 private:
     // critical section to protect the inner data structures
-    mutable CCriticalSection cs;
+    mutable RecursiveMutex cs;
 
     // critical section to protect the inner data structures specifically on messaging
-    mutable CCriticalSection cs_process_message;
+    mutable RecursiveMutex cs_process_message;
 
     // map to hold all MNs
     std::vector<CMasternode> vMasternodes;

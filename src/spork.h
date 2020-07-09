@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2016 The Dash developers
-// Copyright (c) 2016-2019 The EncoCoin developers
+// Copyright (c) 2016-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,7 +18,6 @@
 
 #include "obfuscation.h"
 #include "protocol.h"
-
 
 class CSporkMessage;
 class CSporkManager;
@@ -87,7 +87,7 @@ public:
 class CSporkManager
 {
 private:
-    mutable CCriticalSection cs;
+    mutable RecursiveMutex cs;
     std::string strMasterPrivKey;
     std::map<SporkId, CSporkDef*> sporkDefsById;
     std::map<std::string, CSporkDef*> sporkDefsByName;
