@@ -288,8 +288,8 @@ public:
 
 /** Used to marshal pointers into hashes for db storage. */
 
-// New serialization introduced with 9.0.99
-static const int DBI_OLD_SER_VERSION = 9009900;
+// New serialization introduced with 3.0.0
+static const int DBI_OLD_SER_VERSION = 3000000;
 
 class CDiskBlockIndex : public CBlockIndex
 {
@@ -325,7 +325,7 @@ public:
             READWRITE(VARINT(nUndoPos));
 
         if (nSerVersion > DBI_OLD_SER_VERSION) {
-            // Serialization with CLIENT_VERSION> 9009900
+            // Serialization with CLIENT_VERSION> 3000000
             READWRITE(nMoneySupply);
             READWRITE(nFlags);
             READWRITE(this->nVersion);
@@ -341,7 +341,7 @@ public:
             }
 
         } else {
-            // Serialization with CLIENT_VERSION <= 9009900
+            // Serialization with CLIENT_VERSION <= 3000000
             int64_t nMint = 0;
             uint256 hashNext;
             READWRITE(nMint);
