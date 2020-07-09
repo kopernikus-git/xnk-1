@@ -1,4 +1,5 @@
-// Copyright (c) 2019-2020 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,7 +21,6 @@
 #include "walletmodel.h"
 #include "addresstablemodel.h"
 #include "guiinterface.h"
-
 
 TopBar::TopBar(EncoCoinGUI* _mainWindow, QWidget *parent) :
     PWidget(_mainWindow, parent),
@@ -429,7 +429,7 @@ void TopBar::setNumBlocks(int count) {
             int progress = nAttempt + (masternodeSync.RequestedMasternodeAssets - 1) * MASTERNODE_SYNC_THRESHOLD;
             if(progress >= 0){
                 // todo: MN progress..
-                text = strprintf("Synchronizing masternodes data... - Block: %d", count);
+                text = strprintf("%s - Block: %d", masternodeSync.GetSyncStatus(), count);
                 //progressBar->setMaximum(4 * MASTERNODE_SYNC_THRESHOLD);
                 //progressBar->setValue(progress);
                 needState = false;
