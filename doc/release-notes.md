@@ -33,6 +33,8 @@ Notable Changes
 
 (Developers: add your notes here as part of your pull requests whenever possible)
 
+### Functional Changes
+
 Automatic zXNK backup has been disabled. Thus, the following configuration options have been removed  (either as entries in the encocoin.conf file or as startup flags):
 - `autozxnkbackup`
 - `backupzxnk`
@@ -45,9 +47,7 @@ The default value for the stake-split threshold has been lowered from 2000 XNK, 
 Dependencies
 ------------
 
-
 The minimum required version of QT has been increased from 5.0 to 5.5.1 (the [depends system](https://github.com/encocoin/xnk/blob/master/depends/README.md) provides 5.9.7)
-
 
 
 
@@ -58,22 +58,48 @@ RPC Changes
 
  "CoinStake" JSON object in `getblock` output is removed, and replaced with the strings "stakeModifier" and "hashProofOfStake"
 
+
 - "isPublicSpend" boolean (optional) input parameter is removed from the following commands:
  - `createrawzerocoinspend`
  - `spendzerocoin`
  - `spendzerocoinmints`
  - `spendrawzerocoin`
 
-
  These commands are now able to create only *public* spends (private spends were already enabled only on regtest).
+
 
 - "mintchange" and "minimizechange" boolean input parameters are removed from the following commands:
  - `spendzerocoin`
 
  Mints are disabled, therefore it is no longer possible to mint the change of a zerocoin spend. The change is minimized by default.
 
+
 - `setstakesplitthreshold` now accepts decimal amounts. If the provided value is `0`, split staking gets disabled. `getstakesplitthreshold` returns a double.
 
+- `dumpwallet` no longer allows overwriting files. This is a security measure
+   as well as prevents dangerous user mistakes.
+
+- The output of `getstakingstatus` was reworked. It now shows the following information:
+  ```
+  {
+     "staking_status": true|false,       (boolean) whether the wallet is staking or not
+     "staking_enabled": true|false,      (boolean) whether staking is enabled/disabled in pivx.conf
+     "coldstaking_enabled": true|false,  (boolean) whether cold-staking is enabled/disabled in pivx.conf
+     "haveconnections": true|false,      (boolean) whether network connections are present
+     "mnsync": true|false,               (boolean) whether masternode data is synced
+     "walletunlocked": true|false,       (boolean) whether the wallet is unlocked
+     "stakeablecoins": n,                (numeric) number of stakeable UTXOs
+     "stakingbalance": d,                (numeric) PIV value of the stakeable coins (minus reserve balance, if any)
+     "stakesplitthreshold": d,           (numeric) value of the current threshold for stake split
+     "lastattempt_age": n,               (numeric) seconds since last stake attempt
+     "lastattempt_depth": n,             (numeric) depth of the block on top of which the last stake attempt was made
+     "lastattempt_hash": xxx,            (hex string) hash of the block on top of which the last stake attempt was made
+     "lastattempt_coins": n,             (numeric) number of stakeable coins available during last stake attempt
+     "lastattempt_tries": n,             (numeric) number of stakeable coins checked during last stake attempt
+   }
+   ```
+   
+   
 ### Removed commands
 
 The following commands have been removed from the RPC interface:
