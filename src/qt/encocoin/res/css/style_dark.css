@@ -1162,7 +1162,7 @@ QPushButton[cssClass="btn-check-right"]:checked:hover {
 
 QPushButton[cssClass="btn-check-right"]:checked:pressed {
 	border:  1px solid #ffd166;
-    background-color:#7c816;
+    background-color:#7c6817;
     font-size:18px;
     padding:4px;
     color: #19170c;
