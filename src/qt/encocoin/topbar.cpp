@@ -2,13 +2,13 @@
 // Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "qt/encocoin/topbar.h"
 #include "qt/encocoin/forms/ui_topbar.h"
 #include <QPixmap>
 #include "qt/encocoin/lockunlock.h"
 #include "qt/encocoin/qtutils.h"
 #include "qt/encocoin/receivedialog.h"
+#include "qt/encocoin/loadingdialog.h"
 #include "askpassphrasedialog.h"
 
 #include "bitcoinunits.h"
@@ -21,6 +21,8 @@
 #include "walletmodel.h"
 #include "addresstablemodel.h"
 #include "guiinterface.h"
+
+#define REQUEST_UPGRADE_WALLET 1
 
 TopBar::TopBar(EncoCoinGUI* _mainWindow, QWidget *parent) :
     PWidget(_mainWindow, parent),
@@ -63,9 +65,12 @@ TopBar::TopBar(EncoCoinGUI* _mainWindow, QWidget *parent) :
     progressBar->raise();
     progressBar->move(0, 34);
 
-    // New button
     ui->pushButtonFAQ->setButtonClassStyle("cssClass", "btn-check-faq");
     ui->pushButtonFAQ->setButtonText("FAQ");
+
+    ui->pushButtonHDUpgrade->setButtonClassStyle("cssClass", "btn-check-hd-upgrade");
+    ui->pushButtonHDUpgrade->setButtonText("Upgrade to HD Wallet");
+    ui->pushButtonHDUpgrade->setNoIconText("HD");
 
     ui->pushButtonConnection->setButtonClassStyle("cssClass", "btn-check-connect-inactive");
     ui->pushButtonConnection->setButtonText("No Connection");
@@ -335,7 +340,8 @@ TopBar::~TopBar(){
     delete ui;
 }
 
-void TopBar::loadClientModel(){
+void TopBar::loadClientModel()
+{
     if(clientModel){
         // Keep up to date with client
         setNumConnections(clientModel->getNumConnections());
@@ -477,7 +483,45 @@ void TopBar::setNumBlocks(int count) {
     ui->pushButtonSync->setButtonText(tr(text.data()));
 }
 
-void TopBar::loadWalletModel(){
+void TopBar::showUpgradeDialog()
+{
+    QString title = tr("Wallet Upgrade");
+    if (ask(title,
+            tr("Upgrading to HD wallet will improve\nthe wallet's reliability and security.\n\n\nNote that you will need to MAKE\nA NEW BACKUP of your wallet\nafter upgrade it.\n"))) {
+
+        // If the wallet is locked, notify that the wallet needs to be unlocked first.
+        if (walletModel->isWalletLocked()) {
+            warn(title, tr("Cannot upgrade a locked wallet. Please unlock it first.\n\nOnce it's unlocked you can continue the upgrade\nprocess clicking on the 'HD' icon at the top bar.\n"));
+            return;
+        }
+
+        // Action performed on a separate thread, it's locking cs_main and cs_wallet.
+        LoadingDialog *dialog = new LoadingDialog(window);
+        dialog->execute(this, REQUEST_UPGRADE_WALLET);
+        openDialogWithOpaqueBackgroundFullScreen(dialog, window);
+    }
+}
+
+void TopBar::loadWalletModel()
+{
+    // Upgrade wallet.
+    if (walletModel->isHDEnabled()) {
+        ui->pushButtonHDUpgrade->setVisible(false);
+    } else {
+        connect(ui->pushButtonHDUpgrade, &ExpandableButton::Mouse_Pressed, [this]() {
+            if (walletModel->isWalletLocked()) {
+                inform(tr("Cannot upgrade a locked wallet. Please unlock it first."));
+                return;
+            }
+            showUpgradeDialog();
+        });
+
+        // Upgrade wallet timer, only once. launched 4 seconds after the wallet started.
+        QTimer::singleShot(4000, [this](){
+            showUpgradeDialog();
+        });
+    }
+
     connect(walletModel, SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)), this,
             SLOT(updateBalances(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
     connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
@@ -597,5 +641,35 @@ void TopBar::expandSync() {
         progressBar->setMaximumWidth(ui->pushButtonSync->maximumWidth());
         progressBar->setFixedWidth(ui->pushButtonSync->width());
         progressBar->setMinimumWidth(ui->pushButtonSync->width() - 2);
+    }
+}
+
+void TopBar::updateHDState(const bool& upgraded, const QString& upgradeError)
+{
+    if (upgraded) {
+        ui->pushButtonHDUpgrade->setVisible(false);
+        inform(tr("Wallet upgraded successfully"));
+    } else {
+        warn(tr("Upgrade Wallet Error"), upgradeError);
+    }
+}
+
+void TopBar::run(int type)
+{
+    if (type == REQUEST_UPGRADE_WALLET) {
+        std::string upgradeError;
+        bool ret = this->walletModel->upgradeWallet(upgradeError);
+        QMetaObject::invokeMethod(this,
+                "updateHDState",
+                Qt::QueuedConnection,
+                Q_ARG(bool, ret),
+                Q_ARG(QString, QString::fromStdString(upgradeError))
+        );
+    }
+}
+void TopBar::onError(QString error, int type)
+{
+    if (type == REQUEST_UPGRADE_WALLET) {
+        warn(tr("Upgrade Wallet Error"), error);
     }
 }
