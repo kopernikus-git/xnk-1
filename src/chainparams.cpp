@@ -170,24 +170,19 @@ public:
         consensus.nTime_EnforceNewSporkKey = 1566860400; 		   //!> Sporks signed after Monday, August 26, 2019 11:00:00 PM GMT must use the new spork key
         consensus.nTime_RejectOldSporkKey = 4070908800;  		   //!> Fully reject old spork key after Thursday, September 26, 2019 11:00:00 PM GMT
 
-        // majorities for block version upgrades
-        consensus.nEnforceBlockUpgradeMajority = 8100; // 75%
-        consensus.nRejectBlockOutdatedMajority = 10260; // 95%
-        consensus.nToCheckBlockUpgradeMajority = 10800; // Approximate expected amount of blocks in 7 days (1440*7.5)
-
         // height-based activations
         consensus.height_last_PoW = 500;
         consensus.height_last_ZC_AccumCheckpoint = 502;
         consensus.height_last_ZC_WrappedSerials = 15000000;
-        consensus.height_start_BIP65 = 503; 									// 82629b7a9978f5c7ea3f70a12db92633a7d2e436711500db28b97efd48b1e527
+        consensus.height_start_BIP65 = 503; 									// Block v5:  82629b7a9978f5c7ea3f70a12db92633a7d2e436711500db28b97efd48b1e527
         consensus.height_start_InvalidUTXOsCheck = 999999999; 					//Start enforcing the invalid UTXO's
-        consensus.height_start_MessSignaturesV2 = 530;		  					// TimeProtocolV2, Blocks V7 and newMessageSignatures
+        consensus.height_start_MessSignaturesV2 = 530;		  					// height_start_TimeProtoV2
         consensus.height_start_StakeModifierNewSelection = 495;
-        consensus.height_start_StakeModifierV2 = 501;							//consensus.height_last_PoW + 1;
-        consensus.height_start_TimeProtoV2 = 530; 								// TimeProtocolV2, Blocks V7 and newMessageSignatures
-        consensus.height_start_ZC = 999999999;
+        consensus.height_start_StakeModifierV2 = 501;							// Block v6: consensus.height_last_PoW + 1;
+        consensus.height_start_TimeProtoV2 = 530; 								// Block v7: TimeProtocolV2, Blocks V7 and newMessageSignatures
+        consensus.height_start_ZC = 999999999;									// Block v4: 
         consensus.height_start_ZC_InvalidSerials = 999999999;					//First block that bad serials emerged
-        consensus.height_start_ZC_PublicSpends = 15000000;						// Public coin spend enforcement
+        consensus.height_start_ZC_PublicSpends = 15000000;						//Public coin spend enforcement
         consensus.height_start_ZC_SerialRangeCheck = 840;						//Enforce serial range starting this block
         consensus.height_start_ZC_SerialsV2 = 999999999;
         consensus.height_ZC_RecalcAccumulators = 999999999;						//Trigger a recalculation of accumulators
@@ -291,22 +286,17 @@ public:
         consensus.nTime_EnforceNewSporkKey = 1566860400;    //!> August 26, 2019 11:00:00 PM GMT
         consensus.nTime_RejectOldSporkKey = 1569538800;     //!> September 26, 2019 11:00:00 PM GMT
 
-        // majorities for block version upgrades
-        consensus.nEnforceBlockUpgradeMajority = 4320; // 75%
-        consensus.nRejectBlockOutdatedMajority = 5472; // 95%
-        consensus.nToCheckBlockUpgradeMajority = 5760; // 4 days
-
         // height based activations
         consensus.height_last_PoW = 200;
         consensus.height_last_ZC_AccumCheckpoint = 1106090;
         consensus.height_last_ZC_WrappedSerials = -1;
-        consensus.height_start_BIP65 = 851019;
+        consensus.height_start_BIP65 = 851019;					// Block v5: 
         consensus.height_start_InvalidUTXOsCheck = 999999999;
-        consensus.height_start_MessSignaturesV2 = 1347000;      // TimeProtocolV2, Blocks V7 and newMessageSignatures
+        consensus.height_start_MessSignaturesV2 = 1347000;      // height_start_TimeProtoV2, Blocks V7 and newMessageSignatures
         consensus.height_start_StakeModifierNewSelection = 51197;
-        consensus.height_start_StakeModifierV2 = 1214000;
-        consensus.height_start_TimeProtoV2 = 1347000; 			// TimeProtocolV2, Blocks V7 and newMessageSignatures
-        consensus.height_start_ZC = 201576;
+        consensus.height_start_StakeModifierV2 = 1214000;		// Block v6: 
+        consensus.height_start_TimeProtoV2 = 1347000; 			// Block v7: TimeProtocolV2, Blocks V7 and newMessageSignatures
+        consensus.height_start_ZC = 201576;						// Block v4: 
         consensus.height_start_ZC_InvalidSerials = 999999999;
         consensus.height_start_ZC_PublicSpends = 1106100;
         consensus.height_start_ZC_SerialRangeCheck = 1;			//Enforce serial range starting this block
@@ -417,11 +407,6 @@ public:
         consensus.strSporkPubKeyOld = "";
         consensus.nTime_EnforceNewSporkKey = 0;
         consensus.nTime_RejectOldSporkKey = 0;
-
-        // majorities for block version upgrades
-        consensus.nEnforceBlockUpgradeMajority = 750;
-        consensus.nRejectBlockOutdatedMajority = 950;
-        consensus.nToCheckBlockUpgradeMajority = 1000;
 
         // height based activations
         consensus.height_last_PoW = 250;
