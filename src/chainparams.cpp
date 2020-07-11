@@ -1,10 +1,10 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2019 The EncoCoin developers
+// Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "libzerocoin/Params.h"
 #include "chainparams.h"
 #include "consensus/merkle.h"
@@ -31,7 +31,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
 
     CBlock genesis;
     genesis.vtx.push_back(txNew);
-    genesis.hashPrevBlock = 0;
+    genesis.hashPrevBlock.SetNull();
     genesis.nVersion = nVersion;
     genesis.nTime    = nTime;
     genesis.nBits    = nBits;
@@ -104,8 +104,8 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("0x00000ae5d77e5eb3010a53e731688304019cdada4fee60dfa6b5bc424d87b2a1"))
-    (500, uint256("0x0000042ff28adc30c4ebe9faa16e8a014bd9e327866413e0e536687e7c789c65"));// genesis
+    (0, uint256S("0x00000ae5d77e5eb3010a53e731688304019cdada4fee60dfa6b5bc424d87b2a1"))
+    (500, uint256S("0x0000042ff28adc30c4ebe9faa16e8a014bd9e327866413e0e536687e7c789c65"));// genesis
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
     1546711076, // * UNIX timestamp of last checkpoint block
@@ -115,7 +115,7 @@ static const Checkpoints::CCheckpointData data = {
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
-    boost::assign::map_list_of(0, uint256("0x001"));
+    boost::assign::map_list_of(0, uint256S("0x001"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
     1740710,
@@ -123,7 +123,7 @@ static const Checkpoints::CCheckpointData dataTestnet = {
     250};
 
 static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
-    boost::assign::map_list_of(0, uint256("0x001"));
+    boost::assign::map_list_of(0, uint256S("0x001"));
 static const Checkpoints::CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
     1454124731,
@@ -140,13 +140,13 @@ public:
 
         genesis = CreateGenesisBlock(1588787853, 39886, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256("00000ae5d77e5eb3010a53e731688304019cdada4fee60dfa6b5bc424d87b2a1"));
-        assert(genesis.hashMerkleRoot == uint256("be95faff7110778c545e219557a8520c5a2a973c9622b0c1ef6d4be24a234bbc"));
+        assert(consensus.hashGenesisBlock == uint256S("00000ae5d77e5eb3010a53e731688304019cdada4fee60dfa6b5bc424d87b2a1"));
+        assert(genesis.hashMerkleRoot == uint256S("be95faff7110778c545e219557a8520c5a2a973c9622b0c1ef6d4be24a234bbc"));
 
         consensus.fPowAllowMinDifficultyBlocks = false;
-        consensus.powLimit   = ~uint256(0) >> 20;				// EncoCoin starting difficulty is 1 / 2^12
-        consensus.posLimitV1 = ~uint256(0) >> 24;
-        consensus.posLimitV2 = ~uint256(0) >> 20;
+        consensus.powLimit   = ~UINT256_ZERO >> 20;				// EncoCoin starting difficulty is 1 / 2^12
+        consensus.posLimitV1 = ~UINT256_ZERO >> 24;
+        consensus.posLimitV2 = ~UINT256_ZERO >> 20;
         consensus.nBudgetCycleBlocks = 43200;      				 // approx. 1 every 30 days
         consensus.nBudgetFeeConfirmations = 6;    				  // Number of confirmations for the finalization fee
         consensus.nCoinbaseMaturity = 100;
@@ -261,13 +261,13 @@ public:
 
 //        genesis = CreateGenesisBlock(1454124731, 2402015, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-//        assert(consensus.hashGenesisBlock == uint256("0x0000084fa44e813d62c60d1443dd86164d7cea08e14420353c6c9c5e8c9a743e"));
-//        assert(genesis.hashMerkleRoot == uint256("be95faff7110778c545e219557a8520c5a2a973c9622b0c1ef6d4be24a234bbc"));
+//        assert(consensus.hashGenesisBlock == uint256S("0x0000084fa44e813d62c60d1443dd86164d7cea08e14420353c6c9c5e8c9a743e"));
+//        assert(genesis.hashMerkleRoot == uint256S("be95faff7110778c545e219557a8520c5a2a973c9622b0c1ef6d4be24a234bbc"));
 
         consensus.fPowAllowMinDifficultyBlocks = true;
-        consensus.powLimit   = ~uint256(0) >> 20;				// EncoCoin starting difficulty is 1 / 2^12
-        consensus.posLimitV1 = ~uint256(0) >> 24;
-        consensus.posLimitV2 = ~uint256(0) >> 20;
+        consensus.powLimit   = ~UINT256_ZERO >> 20;				// EncoCoin starting difficulty is 1 / 2^12
+        consensus.posLimitV1 = ~UINT256_ZERO >> 24;
+        consensus.posLimitV2 = ~UINT256_ZERO >> 20;
         consensus.nBudgetCycleBlocks = 144;         			// approx 10 cycles per day
         consensus.nBudgetFeeConfirmations = 3;      			// (only 8-blocks window for finalization on testnet)
         consensus.nCoinbaseMaturity = 15;
@@ -384,13 +384,13 @@ public:
 
 //        genesis = CreateGenesisBlock(1454124731, 2402015, 0x1e0ffff0, 1, 250 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-//        assert(consensus.hashGenesisBlock == uint256("0x0000084fa44e813d62c60d1443dd86164d7cea08e14420353c6c9c5e8c9a743e"));
-//        assert(genesis.hashMerkleRoot == uint256("be95faff7110778c545e219557a8520c5a2a973c9622b0c1ef6d4be24a234bbc"));
+//        assert(consensus.hashGenesisBlock == uint256S("0x0000084fa44e813d62c60d1443dd86164d7cea08e14420353c6c9c5e8c9a743e"));
+//        assert(genesis.hashMerkleRoot == uint256S("be95faff7110778c545e219557a8520c5a2a973c9622b0c1ef6d4be24a234bbc"));
 
         consensus.fPowAllowMinDifficultyBlocks = true;
-        consensus.powLimit   = ~uint256(0) >> 20;				// EncoCoin starting difficulty is 1 / 2^12
-        consensus.posLimitV1 = ~uint256(0) >> 24;
-        consensus.posLimitV2 = ~uint256(0) >> 20;
+        consensus.powLimit   = ~UINT256_ZERO >> 20;				// EncoCoin starting difficulty is 1 / 2^12
+        consensus.posLimitV1 = ~UINT256_ZERO >> 24;
+        consensus.posLimitV2 = ~UINT256_ZERO >> 20;
         consensus.nBudgetCycleBlocks = 144;         			// approx 10 cycles per day
         consensus.nBudgetFeeConfirmations = 3;      			// (only 8-blocks window for finalization on regtest)
         consensus.nCoinbaseMaturity = 100;

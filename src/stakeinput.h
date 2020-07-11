@@ -1,7 +1,7 @@
-// Copyright (c) 2017-2019 The EncoCoin developers
+// Copyright (c) 2017-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef EncoCoin_STAKEINPUT_H
 #define EncoCoin_STAKEINPUT_H
 
@@ -21,7 +21,7 @@ protected:
 public:
     virtual ~CStakeInput(){};
     virtual CBlockIndex* GetIndexFrom() = 0;
-    virtual bool CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut = 0) = 0;
+    virtual bool CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut = UINT256_ZERO) = 0;
     virtual bool GetTxFrom(CTransaction& tx) const = 0;
     virtual CAmount GetValue() const = 0;
     virtual bool CreateTxOuts(CWallet* pwallet, std::vector<CTxOut>& vout, CAmount nTotal) = 0;
@@ -45,7 +45,7 @@ public:
     bool GetTxFrom(CTransaction& tx) const override;
     CAmount GetValue() const override;
     CDataStream GetUniqueness() const override;
-    bool CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut = 0) override;
+    bool CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut = UINT256_ZERO) override;
     bool CreateTxOuts(CWallet* pwallet, std::vector<CTxOut>& vout, CAmount nTotal) override;
     bool IsZXNK() const override { return false; }
 };

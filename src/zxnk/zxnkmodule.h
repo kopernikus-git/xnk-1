@@ -1,7 +1,7 @@
-// Copyright (c) 2019 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-//
 #ifndef EncoCoin_ZXNKMODULE_H
 #define EncoCoin_ZXNKMODULE_H
 
@@ -47,7 +47,7 @@ public:
     CBigNum randomness;
     libzerocoin::CoinRandomnessSchnorrSignature schnorrSig;
     // prev out values
-    uint256 txHash = 0;
+    uint256 txHash;
     unsigned int outputIndex = -1;
     libzerocoin::PublicCoin pubCoin;
 

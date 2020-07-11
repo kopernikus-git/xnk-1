@@ -1763,7 +1763,7 @@ bool AppInit2()
         }
         fVerifyingBlocks = false;
 
-        if (zwalletMain->GetMasterSeed() != 0) {
+        if (!zwalletMain->GetMasterSeed().IsNull()) {
             //Inititalize zXNKWallet
             uiInterface.InitMessage(_("Syncing zXNK wallet..."));
 

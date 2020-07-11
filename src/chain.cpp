@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2016-2019 The EncoCoin developers
+// Copyright (c) 2016-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
-
 
 /**
  * CChain implementation
@@ -166,7 +166,7 @@ int64_t CBlockIndex::GetMedianTimePast() const
 
 unsigned int CBlockIndex::GetStakeEntropyBit() const
 {
-    unsigned int nEntropyBit = ((GetBlockHash().Get64()) & 1);
+    unsigned int nEntropyBit = ((GetBlockHash().GetCheapHash()) & 1);
     if (GetBoolArg("-printstakemodifier", false))
         LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
 
@@ -214,7 +214,7 @@ uint64_t CBlockIndex::GetStakeModifierV1() const
 uint256 CBlockIndex::GetStakeModifierV2() const
 {
     if (vStakeModifier.empty() || !Params().GetConsensus().IsStakeModifierV2(nHeight))
-        return uint256(0);
+        return UINT256_ZERO;
     uint256 nStakeModifier;
     std::memcpy(nStakeModifier.begin(), vStakeModifier.data(), vStakeModifier.size());
     return nStakeModifier;

@@ -84,7 +84,7 @@ bool IsBudgetCollateralValid(uint256 nTxCollateralHash, uint256 nExpectedHash, s
     */
 
     int conf = GetIXConfirmations(nTxCollateralHash);
-    if (nBlockHash != uint256(0)) {
+    if (!nBlockHash.IsNull()) {
         BlockMap::iterator mi = mapBlockIndex.find(nBlockHash);
         if (mi != mapBlockIndex.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
@@ -192,7 +192,7 @@ void CBudgetManager::SubmitFinalBudget()
         return;
     }
 
-    CFinalizedBudgetBroadcast tempBudget(strBudgetName, nBlockStart, vecTxBudgetPayments, 0);
+    CFinalizedBudgetBroadcast tempBudget(strBudgetName, nBlockStart, vecTxBudgetPayments, UINT256_ZERO);
     if (mapSeenFinalizedBudgets.count(tempBudget.GetHash())) {
         LogPrint("mnbudget","CBudgetManager::SubmitFinalBudget - Budget already exists - %s\n", tempBudget.GetHash().ToString());
         nSubmittedHeight = nCurrentHeight;
@@ -230,7 +230,7 @@ void CBudgetManager::SubmitFinalBudget()
         return;
     }
 
-    if (nBlockHash != uint256(0)) {
+    if (!nBlockHash.IsNull()) {
         BlockMap::iterator mi = mapBlockIndex.find(nBlockHash);
         if (mi != mapBlockIndex.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
@@ -977,7 +977,7 @@ void CBudgetManager::NewBlock()
         LOCK(cs_vNodes);
         for (CNode* pnode : vNodes)
             if (pnode->nVersion >= ActiveProtocol())
-                Sync(pnode, 0, true);
+                Sync(pnode, UINT256_ZERO, true);
 
         MarkSynced();
     }

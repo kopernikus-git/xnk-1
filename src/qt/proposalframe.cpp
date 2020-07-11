@@ -1,7 +1,7 @@
-// Copyright (c) 2018-2019 The EncoCoin developers
+// Copyright (c) 2018-2020 The PIVX developers
+// Copyright (c) 2020	   The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "proposalframe.h"
 
 #include "masternode-budget.h"
@@ -265,7 +265,7 @@ void ProposalFrame::voteButton_clicked(int nVote)
 
 void ProposalFrame::SendVote(std::string strHash, int nVote)
 {
-    uint256 hash = uint256(strHash);
+    uint256 hash = uint256S(strHash);
     int failed = 0, success = 0;
     std::string mnresult;
     for (CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {
