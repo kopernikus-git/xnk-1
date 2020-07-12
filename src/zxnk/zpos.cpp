@@ -4,13 +4,42 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zxnk/zpos.h"
-
+#include "zxnkchain.h"
 /*
  * LEGACY: Kept for IBD in order to verify zerocoin stakes occurred when zPoS was active
  * Find the first occurrence of a certain accumulator checksum.
  * Return block index pointer or nullptr if not found
  */
 
+
+uint32_t ParseAccChecksum(uint256 nCheckpoint, const libzerocoin::CoinDenomination denom)
+{
+    int pos = distance(libzerocoin::zerocoinDenomList.begin(),
+            find(libzerocoin::zerocoinDenomList.begin(), libzerocoin::zerocoinDenomList.end(), denom));
+    nCheckpoint = nCheckpoint >> (32*((libzerocoin::zerocoinDenomList.size() - 1) - pos));
+    return nCheckpoint.Get32();
+}
+
+bool CLegacyZXnkStake::InitFromTxIn(const CTxIn& txin)
+{
+    // Construct the stakeinput object
+    if (!txin.IsZerocoinSpend())
+        return error("%s: unable to initialize CLegacyZXnkStake from non zc-spend");
+
+    // Check spend type
+    libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txin);
+    if (spend.getSpendType() != libzerocoin::SpendType::STAKE)
+        return error("%s : spend is using the wrong SpendType (%d)", __func__, (int)spend.getSpendType());
+
+    *this = CLegacyZXnkStake(spend);
+
+    // Find the pindex with the accumulator checksum
+    if (!GetIndexFrom())
+        return error("%s : Failed to find the block index for zxnk stake origin", __func__);
+
+    // All good
+    return true;
+}
 
 CLegacyZXnkStake::CLegacyZXnkStake(const libzerocoin::CoinSpend& spend)
 {
@@ -58,4 +87,21 @@ CDataStream CLegacyZXnkStake::GetUniqueness() const
     CDataStream ss(SER_GETHASH, 0);
     ss << hashSerial;
     return ss;
+}
+
+// Verify stake contextual checks
+bool CLegacyZXnkStake::ContextCheck(int nHeight, uint32_t nTime)
+{
+    const Consensus::Params& consensus = Params().GetConsensus();
+    if (nHeight < consensus.height_start_ZC_SerialsV2 || nHeight >= consensus.height_last_ZC_AccumCheckpoint)
+        return error("%s : zXNK stake block: height %d outside range", __func__, nHeight);
+
+    // The checkpoint needs to be from 200 blocks ago
+    const int cpHeight = nHeight - 1 - consensus.ZC_MinStakeDepth;
+    const libzerocoin::CoinDenomination denom = libzerocoin::AmountToZerocoinDenomination(GetValue());
+    if (ParseAccChecksum(chainActive[cpHeight]->nAccumulatorCheckpoint, denom) != GetChecksum())
+        return error("%s : accum. checksum at height %d is wrong.", __func__, nHeight);
+
+    // All good
+    return true;
 }
