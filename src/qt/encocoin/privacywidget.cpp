@@ -128,10 +128,10 @@ PrivacyWidget::PrivacyWidget(EncoCoinGUI* parent) :
     ui->btnResetZerocoin->setTitleClassAndText("btn-title-grey", "Reset Spent zXNK");
     ui->btnResetZerocoin->setSubTitleClassAndText("text-subtitle", "Reset zerocoin database.");
 
-    connect(ui->btnTotalzXNK, SIGNAL(clicked()), this, SLOT(onTotalZxnkClicked()));
-    connect(ui->btnCoinControl, SIGNAL(clicked()), this, SLOT(onCoinControlClicked()));
-    connect(ui->btnRescanMints, SIGNAL(clicked()), this, SLOT(onRescanMintsClicked()));
-    connect(ui->btnResetZerocoin, SIGNAL(clicked()), this, SLOT(onResetZeroClicked()));
+    connect(ui->btnTotalzXNK, &OptionButton::clicked, this, &PrivacyWidget::onTotalZxnkClicked);
+    connect(ui->btnCoinControl, &OptionButton::clicked, this, &PrivacyWidget::onCoinControlClicked);
+    connect(ui->btnRescanMints, &OptionButton::clicked, this, &PrivacyWidget::onRescanMintsClicked);
+    connect(ui->btnResetZerocoin, &OptionButton::clicked, this, &PrivacyWidget::onResetZeroClicked);
 
     ui->pushRight->setChecked(true);
     connect(ui->pushLeft, &QPushButton::clicked, [this](){onMintSelected(false);});
@@ -183,7 +183,7 @@ void PrivacyWidget::loadWalletModel()
             showList();
         }
 
-        connect(ui->pushButtonSave, SIGNAL(clicked()), this, SLOT(onSendClicked()));
+        connect(ui->pushButtonSave, &QPushButton::clicked, this, &PrivacyWidget::onSendClicked);
     }
 
 }

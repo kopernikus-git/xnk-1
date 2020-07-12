@@ -49,8 +49,8 @@ SettingsBackupWallet::SettingsBackupWallet(EncoCoinGUI* _window, QWidget *parent
     ui->pushButtonSave_2->setText(tr("Change Passphrase"));
     setCssBtnPrimary(ui->pushButtonSave_2);
 
-    connect(ui->pushButtonDocuments, SIGNAL(clicked()), this, SLOT(selectFileOutput()));
-    connect(ui->pushButtonSave_2, SIGNAL(clicked()), this, SLOT(changePassphrase()));
+    connect(ui->pushButtonDocuments, &QPushButton::clicked, this, &SettingsBackupWallet::selectFileOutput);
+    connect(ui->pushButtonSave_2, &QPushButton::clicked, this, &SettingsBackupWallet::changePassphrase);
 }
 
 void SettingsBackupWallet::selectFileOutput()

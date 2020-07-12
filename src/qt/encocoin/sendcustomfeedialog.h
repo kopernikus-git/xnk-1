@@ -9,6 +9,7 @@
 #include "amount.h"
 
 class WalletModel;
+class EncoCoinGUI;
 
 namespace Ui {
 class SendCustomFeeDialog;
@@ -19,7 +20,7 @@ class SendCustomFeeDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SendCustomFeeDialog(QWidget *parent = nullptr);
+    explicit SendCustomFeeDialog(EncoCoinGUI *parent = nullptr);
     ~SendCustomFeeDialog();
 
     void setWalletModel(WalletModel* model);

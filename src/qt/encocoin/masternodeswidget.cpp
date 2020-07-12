@@ -125,14 +125,14 @@ MasterNodesWidget::MasterNodesWidget(EncoCoinGUI *parent) :
     ui->labelEmpty->setText(tr("No active Masternode yet"));
     setCssProperty(ui->labelEmpty, "text-empty");
 
-    connect(ui->pushButtonSave, SIGNAL(clicked()), this, SLOT(onCreateMNClicked()));
+    connect(ui->pushButtonSave, &QPushButton::clicked, this, &MasterNodesWidget::onCreateMNClicked);
     connect(ui->pushButtonStartAll, &QPushButton::clicked, [this]() {
         onStartAllClicked(REQUEST_START_ALL);
     });
     connect(ui->pushButtonStartMissing, &QPushButton::clicked, [this]() {
         onStartAllClicked(REQUEST_START_MISSING);
     });
-    connect(ui->listMn, SIGNAL(clicked(QModelIndex)), this, SLOT(onMNClicked(QModelIndex)));
+    connect(ui->listMn, &QListView::clicked, this, &MasterNodesWidget::onMNClicked);
     connect(ui->btnAbout, &OptionButton::clicked, [this](){window->openFAQ(5);});
     connect(ui->btnAboutController, &OptionButton::clicked, [this](){window->openFAQ(6);});
 }
@@ -182,9 +182,9 @@ void MasterNodesWidget::onMNClicked(const QModelIndex &index)
         this->menu->setDeleteBtnText(tr("Delete"));
         this->menu->setCopyBtnText(tr("Info"));
         connect(this->menu, &TooltipMenu::message, this, &AddressesWidget::message);
-        connect(this->menu, SIGNAL(onEditClicked()), this, SLOT(onEditMNClicked()));
-        connect(this->menu, SIGNAL(onDeleteClicked()), this, SLOT(onDeleteMNClicked()));
-        connect(this->menu, SIGNAL(onCopyClicked()), this, SLOT(onInfoMNClicked()));
+        connect(this->menu, &TooltipMenu::onEditClicked, this, &MasterNodesWidget::onEditMNClicked);
+        connect(this->menu, &TooltipMenu::onDeleteClicked, this, &MasterNodesWidget::onDeleteMNClicked);
+        connect(this->menu, &TooltipMenu::onCopyClicked, this, &MasterNodesWidget::onInfoMNClicked);
         this->menu->adjustSize();
     } else {
         this->menu->hide();
@@ -481,7 +481,7 @@ void MasterNodesWidget::onCreateMNClicked()
     }
 
     if (walletModel->getBalance() <= CollateralRequired(chainActive.Height())) {
-        inform(tr("Not enough balance to create a masternode")); //, 10,000 PIV required."));
+        inform(tr("Not enough balance to create a masternode")); //, 10,000 XNK required."));
         return;
     }
     showHideOp(true);

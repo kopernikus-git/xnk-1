@@ -55,9 +55,9 @@ ZXnkControlDialog::ZXnkControlDialog(QWidget *parent) :
     ui->pushButtonAll->setProperty("cssClass", "btn-check");
 
     // click on checkbox
-    connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(updateSelection(QTreeWidgetItem*, int)));
+    connect(ui->treeWidget, &QTreeWidget::itemChanged, this, &ZXnkControlDialog::updateSelection);
     // push select/deselect all button
-    connect(ui->pushButtonAll, SIGNAL(clicked()), this, SLOT(ButtonAllClicked()));
+    connect(ui->pushButtonAll, &QPushButton::clicked, this, &ZXnkControlDialog::ButtonAllClicked);
 }
 
 ZXnkControlDialog::~ZXnkControlDialog()

@@ -26,7 +26,7 @@ public:
     void setText(QString text);
 private Q_SLOTS:
     void hideAnim();
-    void windowResizeEvent(QResizeEvent *event);
+    void windowResizeEvent(QResizeEvent* event);
 private:
     Ui::SnackBar *ui;
     EncoCoinGUI* window = nullptr;
