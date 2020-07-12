@@ -55,6 +55,7 @@ struct Params {
     int height_start_MessSignaturesV2;
     int height_start_StakeModifierNewSelection;
     int height_start_StakeModifierV2;               // Blocks v6 start
+    int height_start_StakeModifierV3;               // Blocks v8 start
     int height_start_TimeProtoV2;                   // Blocks v7 start
     int height_start_ZC;                            // Blocks v4 start
     int height_start_ZC_InvalidSerials;
@@ -95,7 +96,7 @@ struct Params {
             const int utxoFromBlockHeight, const uint32_t utxoFromBlockTime) const
     {
         // before stake modifier V2, we require the utxo to be nStakeMinAge old
-        if (!IsStakeModifierV2(contextHeight))
+        if (contextHeight < height_start_StakeModifierV2)
             return (utxoFromBlockTime + nStakeMinAge <= contextTime);
         // with stake modifier V2+, we require the utxo to be nStakeMinDepth deep in the chain
         return (contextHeight - utxoFromBlockHeight >= nStakeMinDepth);
