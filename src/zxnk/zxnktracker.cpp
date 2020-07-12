@@ -2,19 +2,20 @@
 // Copyright (c) 2020		The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include <zxnk/deterministicmint.h>
 #include "zxnktracker.h"
 #include "util.h"
 #include "sync.h"
 #include "main.h"
 #include "txdb.h"
+#include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "zxnk/zxnkwallet.h"
 
-CzXNKTracker::CzXNKTracker(std::string strWalletFile)
+
+CzXNKTracker::CzXNKTracker(CWallet* parent)
 {
-    this->strWalletFile = strWalletFile;
+    this->wallet = parent;
     mapSerialHashes.clear();
     mapPendingSpends.clear();
     fInitialized = false;
@@ -40,10 +41,10 @@ bool CzXNKTracker::Archive(CMintMeta& meta)
     if (mapSerialHashes.count(meta.hashSerial))
         mapSerialHashes.at(meta.hashSerial).isArchived = true;
 
-    CWalletDB walletdb(strWalletFile);
+    this->wallet = parent;
     CZerocoinMint mint;
     if (walletdb.ReadZerocoinMint(meta.hashPubcoin, mint)) {
-        if (!CWalletDB(strWalletFile).ArchiveMintOrphan(mint))
+        if (!CWalletDB(wallet->strWalletFile).ArchiveMintOrphan(mint))
             return error("%s: failed to archive zerocoinmint", __func__);
     } else {
         //failed to read mint from DB, try reading deterministic
@@ -60,7 +61,7 @@ bool CzXNKTracker::Archive(CMintMeta& meta)
 
 bool CzXNKTracker::UnArchive(const uint256& hashPubcoin, bool isDeterministic)
 {
-    CWalletDB walletdb(strWalletFile);
+    CWalletDB walletdb(wallet->strWalletFile);
     if (isDeterministic) {
         CDeterministicMint dMint;
         if (!walletdb.UnarchiveDeterministicMint(hashPubcoin, dMint))
@@ -229,12 +230,12 @@ bool CzXNKTracker::UpdateZerocoinMint(const CZerocoinMint& mint)
     mapSerialHashes.at(hashSerial) = meta;
 
     //Write to db
-    return CWalletDB(strWalletFile).WriteZerocoinMint(mint);
+    return CWalletDB(wallet->strWalletFile).WriteZerocoinMint(mint);
 }
 
 bool CzXNKTracker::UpdateState(const CMintMeta& meta)
 {
-    CWalletDB walletdb(strWalletFile);
+    CWalletDB walletdb(wallet->strWalletFile);
 
     if (meta.isDeterministic) {
         CDeterministicMint dMint;
@@ -277,7 +278,7 @@ bool CzXNKTracker::UpdateState(const CMintMeta& meta)
 
 void CzXNKTracker::Add(const CDeterministicMint& dMint, bool isNew, bool isArchived, CzXNKWallet* zXNKWallet)
 {
-    bool iszXNKWalletInitialized = (NULL != zXNKWallet);
+    bool iszXNKWalletInitialized = (nullptr != zXNKWallet);
     CMintMeta meta;
     meta.hashPubcoin = dMint.GetPubcoinHash();
     meta.nHeight = dMint.GetHeight();
@@ -289,15 +290,15 @@ void CzXNKTracker::Add(const CDeterministicMint& dMint, bool isNew, bool isArchi
     meta.denom = dMint.GetDenomination();
     meta.isArchived = isArchived;
     meta.isDeterministic = true;
-    if (! iszXNKWalletInitialized)
-        zXNKWallet = new CzXNKWallet(strWalletFile);
+    if (!iszXNKWalletInitialized)
+        zXNKWallet = new CzXNKWallet(wallet);
     meta.isSeedCorrect = zXNKWallet->CheckSeed(dMint);
-    if (! iszXNKWalletInitialized)
+    if (!iszXNKWalletInitialized)
         delete zXNKWallet;
     mapSerialHashes[meta.hashSerial] = meta;
 
     if (isNew)
-        CWalletDB(strWalletFile).WriteDeterministicMint(dMint);
+        CWalletDB(wallet->strWalletFile).WriteDeterministicMint(dMint);
 }
 
 void CzXNKTracker::Add(const CZerocoinMint& mint, bool isNew, bool isArchived)
@@ -318,7 +319,7 @@ void CzXNKTracker::Add(const CZerocoinMint& mint, bool isNew, bool isArchived)
     mapSerialHashes[meta.hashSerial] = meta;
 
     if (isNew)
-        CWalletDB(strWalletFile).WriteZerocoinMint(mint);
+        CWalletDB(wallet->strWalletFile).WriteZerocoinMint(mint);
 }
 
 void CzXNKTracker::SetPubcoinUsed(const uint256& hashPubcoin, const uint256& txid)
@@ -436,7 +437,7 @@ bool CzXNKTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
 
 std::set<CMintMeta> CzXNKTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, bool fUpdateStatus, bool fWrongSeed, bool fExcludeV1)
 {
-    CWalletDB walletdb(strWalletFile);
+    CWalletDB walletdb(wallet->strWalletFile);
     if (fUpdateStatus) {
         std::list<CZerocoinMint> listMintsDB = walletdb.ListMintedCoins();
         for (auto& mint : listMintsDB)
@@ -445,13 +446,11 @@ std::set<CMintMeta> CzXNKTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, 
 
         std::list<CDeterministicMint> listDeterministicDB = walletdb.ListDeterministicMints();
 
-        CzXNKWallet* zXNKWallet = new CzXNKWallet(strWalletFile);
         for (auto& dMint : listDeterministicDB) {
             if (fExcludeV1 && dMint.GetVersion() < 2)
                 continue;
-            Add(dMint, false, false, zXNKWallet);
+            Add(dMint, false, false, wallet->zwalletMain);
         }
-        delete zXNKWallet;
         LogPrint("zero", "%s: added %d dzxnk from DB\n", __func__, listDeterministicDB.size());
     }
 

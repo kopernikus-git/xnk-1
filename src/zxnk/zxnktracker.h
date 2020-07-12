@@ -11,17 +11,19 @@
 
 class CDeterministicMint;
 class CzXNKWallet;
+class CWallet;
 
 class CzXNKTracker
 {
 private:
     bool fInitialized;
-    std::string strWalletFile;
+    /* Parent wallet */
+    CWallet* wallet{nullptr};
     std::map<uint256, CMintMeta> mapSerialHashes;
     std::map<uint256, uint256> mapPendingSpends; //serialhash, txid of spend
     bool UpdateStatusInternal(const std::set<uint256>& setMempool, CMintMeta& mint);
 public:
-    CzXNKTracker(std::string strWalletFile);
+    CzXNKTracker(CWallet* parent);
     ~CzXNKTracker();
     void Add(const CDeterministicMint& dMint, bool isNew = false, bool isArchived = false, CzXNKWallet* zXNKWallet = NULL);
     void Add(const CZerocoinMint& mint, bool isNew = false, bool isArchived = false);

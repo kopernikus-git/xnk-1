@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(zerocoin_spend_test)
 
     bool fFirstRun;
     cWallet.LoadWallet(fFirstRun);
-    cWallet.zxnkTracker = std::unique_ptr<CzXNKTracker>(new CzXNKTracker(cWallet.strWalletFile));
+    cWallet.zxnkTracker = std::unique_ptr<CzXNKTracker>(new CzXNKTracker(&cWallet));
     CMutableTransaction tx;
     CWalletTx* wtx = new CWalletTx(&cWallet, tx);
     std::vector<CZerocoinSpend> vSpends;
