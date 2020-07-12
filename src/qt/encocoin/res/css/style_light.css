@@ -1715,9 +1715,9 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
     font-size:16px;
 }
 
-*[cssClass="text-violet-warning"] {
-    color: #9c8154;;
-    font-size:13px;
+*[cssClass="text-warning-small"] {
+    color: #f84444;
+    font-size:14px;
 }
 
 *[cssClass="ic-warning"] {
