@@ -109,7 +109,7 @@ CBlockIndex* GetChainTip()
     return mapBlockIndex.at(p->GetBlockHash());
 }
 
-std::pair<int, std::pair<uint256, uint256> > pCheckpointCache;
+
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
 {
     CReserveKey reservekey(pwallet);
