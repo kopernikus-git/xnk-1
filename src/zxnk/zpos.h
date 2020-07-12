@@ -20,7 +20,7 @@ public:
     CLegacyZXnkStake() {}
 
     explicit CLegacyZXnkStake(const libzerocoin::CoinSpend& spend);
-    bool InitFromTxIn(const CTxIn& txin);
+    bool InitFromTxIn(const CTxIn& txin) override;
     bool IsZXNK() const override { return true; }
     uint32_t GetChecksum() const { return nChecksum; }
     CBlockIndex* GetIndexFrom() override;

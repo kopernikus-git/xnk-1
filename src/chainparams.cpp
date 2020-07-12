@@ -17,7 +17,7 @@
 #include <boost/assign/list_of.hpp>
 #include <limits>
 
-#include <chainparamsseeds.h>
+#include "chainparamsseeds.h"
 
 std::string CDNSSeedData::getHost(uint64_t requiredServiceBits) const {
     //use default host for non-filter-capable seeds or if we use the default service bits (NODE_NETWORK)
