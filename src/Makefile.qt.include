@@ -27,7 +27,6 @@ QT_FORMS_UI = \
   qt/encocoin/forms/lockunlock.ui \
   qt/encocoin/forms/expandablebutton.ui \
   qt/encocoin/forms/receivedialog.ui \
-  qt/encocoin/forms/walletpassworddialog.ui \
   qt/encocoin/forms/topbar.ui \
   qt/encocoin/forms/txrow.ui \
   qt/encocoin/forms/dashboardwidget.ui \
@@ -121,7 +120,6 @@ QT_MOC_CPP = \
   qt/encocoin/moc_expandablebutton.cpp \
   qt/encocoin/moc_furabstractlistitemdelegate.cpp \
   qt/encocoin/moc_receivedialog.cpp \
-  qt/encocoin/moc_walletpassworddialog.cpp \
   qt/encocoin/moc_pfborderimage.cpp \
   qt/encocoin/moc_topbar.cpp \
   qt/encocoin/moc_txrow.cpp \
@@ -252,7 +250,6 @@ BITCOIN_QT_H = \
   qt/encocoin/txviewholder.h \
   qt/encocoin/qtutils.h \
   qt/encocoin/expandablebutton.h \
-  qt/encocoin/walletpassworddialog.h \
   qt/encocoin/topbar.h \
   qt/encocoin/txrow.h \
   qt/encocoin/addressholder.h \
@@ -641,7 +638,6 @@ BITCOIN_QT_WALLET_CPP = \
   qt/encocoin/txviewholder.cpp \
   qt/encocoin/qtutils.cpp \
   qt/encocoin/expandablebutton.cpp \
-  qt/encocoin/walletpassworddialog.cpp \
   qt/encocoin/topbar.cpp \
   qt/encocoin/txrow.cpp \
   qt/encocoin/addressholder.cpp \

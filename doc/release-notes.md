@@ -164,6 +164,14 @@ The p2p alert system has been removed and the 'alert' message is no longer suppo
 
 ### Wallet
 
+
+__Context Lock/Unlock__:
+Present the unlock dialog directly (instead of an error message), whenever an action on encrypted/locked wallet requires full unlock.<br>
+Restore the previous locking state ("locked" or "locked for staking only") when the action is completed.
+
+
+__Configuration Options__:
+
 The `-reservebalance` configuration/startup option has been removed
 
 

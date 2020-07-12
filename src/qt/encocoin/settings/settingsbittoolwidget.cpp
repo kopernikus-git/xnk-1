@@ -125,17 +125,20 @@ SettingsBitToolWidget::SettingsBitToolWidget(EncoCoinGUI* _window, QWidget *pare
     connect(ui->pushButtonDecryptClear, SIGNAL(clicked()), this, SLOT(onClearDecrypt()));
 }
 
-void SettingsBitToolWidget::setAddress_ENC(const QString& address){
+void SettingsBitToolWidget::setAddress_ENC(const QString& address)
+{
     ui->addressIn_ENC->setText(address);
     ui->passphraseIn_ENC->setFocus();
 }
 
-void SettingsBitToolWidget::onEncryptSelected(bool isEncr) {
+void SettingsBitToolWidget::onEncryptSelected(bool isEncr)
+{
     ui->stackedWidget->setCurrentIndex(isEncr);
 }
 
 QString specialChar = "\"@!#$%&'()*+,-./:;<=>?`{|}~^_[]\\";
 QString validChar = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" + specialChar;
+
 bool isValidPassphrase(QString strPassphrase, QString& strInvalid)
 {
     for (int i = 0; i < strPassphrase.size(); i++) {
@@ -179,7 +182,7 @@ void SettingsBitToolWidget::onEncryptKeyButtonENCClicked()
         return;
     }
 
-    WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::BIP_38, true));
+    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
     if (!ctx.isValid()) {
         ui->statusLabel_ENC->setStyleSheet("QLabel { color: red; }");
         ui->statusLabel_ENC->setText(tr("Wallet unlock was cancelled."));
@@ -208,9 +211,10 @@ void SettingsBitToolWidget::onClearAll(){
     ui->addressIn_ENC->setFocus();
 }
 
-void SettingsBitToolWidget::onAddressesClicked(){
+void SettingsBitToolWidget::onAddressesClicked()
+{
     int addressSize = walletModel->getAddressTableModel()->sizeRecv();
-    if(addressSize == 0) {
+    if (addressSize == 0) {
         inform(tr("No addresses available, you can go to the receive screen and add some there!"));
         return;
     }
@@ -218,7 +222,7 @@ void SettingsBitToolWidget::onAddressesClicked(){
     int height = (addressSize <= 2) ? ui->addressIn_ENC->height() * ( 2 * (addressSize + 1 )) : ui->addressIn_ENC->height() * 4;
     int width = ui->containerAddressEnc->width();
 
-    if(!menuContacts){
+    if (!menuContacts) {
         menuContacts = new ContactsDropdown(
                 width,
                 height,
@@ -231,7 +235,7 @@ void SettingsBitToolWidget::onAddressesClicked(){
 
     }
 
-    if(menuContacts->isVisible()){
+    if (menuContacts->isVisible()) {
         menuContacts->hide();
         return;
     }
@@ -247,8 +251,9 @@ void SettingsBitToolWidget::onAddressesClicked(){
     menuContacts->show();
 }
 
-void SettingsBitToolWidget::resizeMenu(){
-    if(menuContacts && menuContacts->isVisible()){
+void SettingsBitToolWidget::resizeMenu()
+{
+    if(menuContacts && menuContacts->isVisible()) {
         int width = ui->containerAddress->width();
         menuContacts->resizeList(width, menuContacts->height());
         menuContacts->resize(width, menuContacts->height());
@@ -259,14 +264,16 @@ void SettingsBitToolWidget::resizeMenu(){
     }
 }
 
-void SettingsBitToolWidget::onClearDecrypt(){
+void SettingsBitToolWidget::onClearDecrypt()
+{
     ui->lineEditKey->clear();
     ui->lineEditDecryptResult->clear();
     ui->lineEditPassphrase->clear();
     key = CKey();
 }
 
-void SettingsBitToolWidget::onDecryptClicked(){
+void SettingsBitToolWidget::onDecryptClicked()
+{
     std::string strPassphrase = ui->lineEditPassphrase->text().toStdString();
     std::string strKey = ui->lineEditKey->text().toStdString();
 
@@ -284,8 +291,9 @@ void SettingsBitToolWidget::onDecryptClicked(){
     ui->lineEditDecryptResult->setText(QString::fromStdString(address.ToString()));
 }
 
-void SettingsBitToolWidget::importAddressFromDecKey(){
-    WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::BIP_38, true));
+void SettingsBitToolWidget::importAddressFromDecKey()
+{
+    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
     if (!ctx.isValid()) {
         ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
         ui->statusLabel_DEC->setText(tr("Wallet unlock was cancelled."));
@@ -333,7 +341,8 @@ void SettingsBitToolWidget::importAddressFromDecKey(){
     ui->statusLabel_DEC->setText(tr("Successfully added private key to the wallet"));
 }
 
-void SettingsBitToolWidget::resizeEvent(QResizeEvent *event){
+void SettingsBitToolWidget::resizeEvent(QResizeEvent *event)
+{
     resizeMenu();
     QWidget::resizeEvent(event);
 }

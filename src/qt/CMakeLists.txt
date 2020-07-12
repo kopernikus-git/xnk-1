@@ -131,7 +131,6 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/txviewholder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/qtutils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/expandablebutton.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/walletpassworddialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/topbar.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/txrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/addressfilterproxymodel.cpp
