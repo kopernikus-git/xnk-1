@@ -162,7 +162,6 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/tooltipmenu.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/addresseswidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/defaultdialog.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/denomgenerationdialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/privacywidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/coldstakingwidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/settings/settingsbackupwallet.cpp
