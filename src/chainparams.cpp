@@ -19,6 +19,14 @@
 
 #include <chainparamsseeds.h>
 
+std::string CDNSSeedData::getHost(uint64_t requiredServiceBits) const {
+    //use default host for non-filter-capable seeds or if we use the default service bits (NODE_NETWORK)
+    if (!supportsServiceBitsFiltering || requiredServiceBits == NODE_NETWORK)
+        return host;
+
+    return strprintf("x%x.%s", requiredServiceBits, host);
+}
+
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     CMutableTransaction txNew;
@@ -219,10 +227,10 @@ public:
         nDefaultPort = 43013;
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("45.77.111.105", "45.77.111.105"));
-        vSeeds.push_back(CDNSSeedData("173.199.114.235", "173.199.114.235"));
-        vSeeds.push_back(CDNSSeedData("45.63.11.20", "45.63.11.20"));
-        vSeeds.push_back(CDNSSeedData("149.28.227.4", "149.28.227.4"));
+        vSeeds.push_back(CDNSSeedData("45.77.111.105", "45.77.111.105", true));
+        vSeeds.push_back(CDNSSeedData("173.199.114.235", "173.199.114.235", true));
+        vSeeds.push_back(CDNSSeedData("45.63.11.20", "45.63.11.20", true));
+        vSeeds.push_back(CDNSSeedData("149.28.227.4", "149.28.227.4", true));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 9);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 93);
