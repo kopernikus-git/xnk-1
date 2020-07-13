@@ -164,6 +164,14 @@ The p2p alert system has been removed and the 'alert' message is no longer suppo
 
 ### GUI
 
+**Keyboard navigation**: dialogs can now be accepted with the `ENTER` (`RETURN`) key, and dismissed with the `ESC` key
+
+**Address sorting**: address sorting in "My Addresses" / "Contacts" / "Cold Staking" can now be customized, setting it either by label (default), by address, or by creation date, ascending (default) or descending order.
+Addresses in the dropdown of the "Send Transaction" and "Send Delegation" widgets are now automatically sorted by label with ascending order
+
+**Custom Fee**: The custom fee selected when sending a transaction is now saved in the wallet database and persisted across multiple sends and wallet's restarts
+
+
 ### RPC/REST
 
 ### Wallet

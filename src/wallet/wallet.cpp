@@ -3902,6 +3902,10 @@ void CWallet::SetNull()
     // Stake split threshold
     nStakeSplitThreshold = DEFAULT_STAKE_SPLIT_THRESHOLD;
 
+    // User-defined fee XNK/kb
+    fUseCustomFee = false;
+    nCustomFee = CWallet::minTxFee.GetFeePerK();
+
     //MultiSend
     vMultiSend.clear();
     fMultiSendStake = false;
