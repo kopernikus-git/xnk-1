@@ -607,8 +607,8 @@ public:
     std::map<libzerocoin::CoinDenomination, CAmount> GetMyZerocoinDistribution() const;
 
     // zXNK wallet
-    CzXNKWallet* zwalletMain;
-    std::unique_ptr<CzXNKTracker> zxnkTracker;
+    CzXNKWallet* zwalletMain{nullptr};
+    std::unique_ptr<CzXNKTracker> zxnkTracker{nullptr};
     void setZWallet(CzXNKWallet* zwallet);
     CzXNKWallet* getZWallet();
     bool IsMyZerocoinSpend(const CBigNum& bnSerial) const;
