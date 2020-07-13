@@ -293,8 +293,8 @@
                <property name="textInteractionFlags">
                 <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                </property>
+               <property name="text">
                 <string notr="true">N/A</string>
-                <string>TextLabel</string>
                </property>
               </widget>
              </item>
