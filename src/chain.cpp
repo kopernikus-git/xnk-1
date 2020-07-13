@@ -224,7 +224,7 @@ void CBlockIndex::SetNewStakeModifier(const uint256& prevoutId)
     // Generate Hash(prevoutId | prevModifier) - switch with genesis modifier (0) on upgrade block
     CHashWriter ss(SER_GETHASH, 0);
     ss << prevoutId;
-    ss << pprev->GetStakeModifier();
+    ss << pprev->GetStakeModifierV2();
     SetStakeModifier(ss.GetHash());
 }
 

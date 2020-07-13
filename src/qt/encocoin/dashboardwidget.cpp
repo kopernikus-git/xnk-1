@@ -632,7 +632,7 @@ bool DashboardWidget::refreshChart()
 void DashboardWidget::onChartRefreshed() 
 {
     if (chart) {
-        if( series) {
+        if  series) {
             series->clear();
             series->detachAxis(axisX);
             series->detachAxis(axisY);
@@ -809,6 +809,14 @@ void DashboardWidget::windowResizeEvent(QResizeEvent* event)
     }
 }
 
+void DashboardWidget::onHideChartsChanged(bool fHide)
+{
+    fShowCharts = !fHide;
+    // Hide charts if requested
+    ui->right->setVisible(fShowCharts);
+    if (fShowCharts) tryChartRefresh();
+}
+
 #endif
 
 void DashboardWidget::run(int type) 
@@ -819,14 +827,6 @@ void DashboardWidget::run(int type)
         if (loadChartData(withMonthNames))
             QMetaObject::invokeMethod(this, "onChartRefreshed", Qt::QueuedConnection);
     }
-
-void DashboardWidget::onHideChartsChanged(bool fHide)
-{
-    fShowCharts = !fHide;
-    // Hide charts if requested
-    ui->right->setVisible(fShowCharts);
-    if (fShowCharts) tryChartRefresh();
-}
 
 #endif
 }
