@@ -1697,8 +1697,8 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, b
 
                 for (auto& m : listMints) {
                     if (IsMyMint(m.GetValue())) {
-                        LogPrint("zero", "%s: found mint\n", __func__);
-                        pwalletMain->UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
+                        LogPrint(BCLog::LEGACYZC, "%s: found mint\n", __func__);
+                        UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
 
                         // Add the transaction to the wallet
                         for (auto& tx : block.vtx) {
@@ -1706,10 +1706,10 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, b
                             if (setAddedToWallet.count(txid) || mapWallet.count(txid))
                                 continue;
                             if (txid == m.GetTxHash()) {
-                                CWalletTx wtx(pwalletMain, tx);
+                                CWalletTx wtx(this, tx);
                                 wtx.nTimeReceived = block.GetBlockTime();
                                 wtx.SetMerkleBranch(block);
-                                pwalletMain->AddToWallet(wtx, false, &walletdb);
+                                AddToWallet(wtx, false, &walletdb);
                                 setAddedToWallet.insert(txid);
                             }
                         }
@@ -1722,14 +1722,14 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, b
                             if (setAddedToWallet.count(txidSpend) || mapWallet.count(txidSpend))
                                 continue;
 
-                            CWalletTx wtx(pwalletMain, txSpend);
+                            CWalletTx wtx(this, txSpend);
                             CBlockIndex* pindexSpend = chainActive[nHeightSpend];
                             CBlock blockSpend;
                             if (ReadBlockFromDisk(blockSpend, pindexSpend))
                                 wtx.SetMerkleBranch(blockSpend);
 
                             wtx.nTimeReceived = pindexSpend->nTime;
-                            pwalletMain->AddToWallet(wtx, false, &walletdb);
+                            AddToWallet(wtx, false, &walletdb);
                             setAddedToWallet.emplace(txidSpend);
                         }
                     }
@@ -2231,7 +2231,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     // try to find nondenom first to prevent unneeded spending of mixed coins
     for (unsigned int tryDenom = 0; tryDenom < 2; tryDenom++) {
-        if (fDebug) LogPrint("selectcoins", "tryDenom: %d\n", tryDenom);
+        LogPrint(BCLog::SELECTCOINS, "tryDenom: %d\n", tryDenom);
         vValue.clear();
         nTotalLower = 0;
         for (const COutput& output : vCoins) {
@@ -2240,7 +2240,6 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
             const CWalletTx* pcoin = output.tx;
 
-            //            if (fDebug) LogPrint("selectcoins", "value %s confirms %d\n", FormatMoney(pcoin->vout[output.i].nValue), output.nDepth);
             if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs))
                 continue;
 
@@ -2350,7 +2349,7 @@ bool CWallet::IsCollateralAmount(CAmount nInputAmount) const
 bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useIX)
 {
     // make our change address
-    CReserveKey reservekey(pwalletMain);
+    CReserveKey reservekey(this);
 
     CScript scriptChange;
     scriptChange << OP_RETURN << ToByteVector(hash);
@@ -2373,7 +2372,7 @@ bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useI
 bool CWallet::GetBudgetFinalizationCollateralTX(CWalletTx& tx, uint256 hash, bool useIX)
 {
     // make our change address
-    CReserveKey reservekey(pwalletMain);
+    CReserveKey reservekey(this);
 
     CScript scriptChange;
     scriptChange << OP_RETURN << ToByteVector(hash);
@@ -2766,7 +2765,7 @@ bool CWallet::CreateCoinStake(
 
         break;
     }
-    LogPrint("staking", "%s: attempted staking %d times\n", __func__, nAttempts);
+    LogPrint(BCLog::STAKING, "%s: attempted staking %d times\n", __func__, nAttempts);
 
     if (!fKernelFound)
         return false;

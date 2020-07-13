@@ -56,7 +56,7 @@ CzXNKWallet::CzXNKWallet(CWallet* parent)
         seed = key.GetPrivKey_256();
         seedMaster = seed;
         LogPrintf("%s: first run of zxnk wallet detected, new seed generated. Seedhash=%s\n", __func__, Hash(seed.begin(), seed.end()).GetHex());
-    } else if (!pwalletMain->GetDeterministicSeed(hashSeed, seed)) {
+    } else if (!parent->GetDeterministicSeed(hashSeed, seed)) {
         LogPrintf("%s: failed to get deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
         return;
     }
@@ -274,7 +274,7 @@ void CzXNKWallet::SyncWithChain(bool fGenerateMintPool)
                 SetMintSeen(bnValue, pindex->nHeight, txHash, denomination);
                 nLastCountUsed = std::max(pMint.second, nLastCountUsed);
                 nCountLastUsed = std::max(nLastCountUsed, nCountLastUsed);
-                LogPrint("zero", "%s: updated count to %d\n", __func__, nCountLastUsed);
+                LogPrint(BCLog::LEGACYZC, "%s: updated count to %d\n", __func__, nCountLastUsed);
             }
         }
     }

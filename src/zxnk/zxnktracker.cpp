@@ -41,7 +41,7 @@ bool CzXNKTracker::Archive(CMintMeta& meta)
     if (mapSerialHashes.count(meta.hashSerial))
         mapSerialHashes.at(meta.hashSerial).isArchived = true;
 
-    this->wallet = parent;
+    CWalletDB walletdb(wallet->strWalletFile);
     CZerocoinMint mint;
     if (walletdb.ReadZerocoinMint(meta.hashPubcoin, mint)) {
         if (!CWalletDB(wallet->strWalletFile).ArchiveMintOrphan(mint))
@@ -442,7 +442,7 @@ std::set<CMintMeta> CzXNKTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, 
         std::list<CZerocoinMint> listMintsDB = walletdb.ListMintedCoins();
         for (auto& mint : listMintsDB)
             Add(mint);
-        LogPrint("zero", "%s: added %d zerocoinmints from DB\n", __func__, listMintsDB.size());
+        LogPrint(BCLog::LEGACYZC, "%s: added %d zerocoinmints from DB\n", __func__, listMintsDB.size());
 
         std::list<CDeterministicMint> listDeterministicDB = walletdb.ListDeterministicMints();
 
@@ -451,7 +451,7 @@ std::set<CMintMeta> CzXNKTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, 
                 continue;
             Add(dMint, false, false, wallet->zwalletMain);
         }
-        LogPrint("zero", "%s: added %d dzxnk from DB\n", __func__, listDeterministicDB.size());
+        LogPrint(BCLog::LEGACYZC, "%s: added %d dzxnk from DB\n", __func__, listDeterministicDB.size());
     }
 
     std::vector<CMintMeta> vOverWrite;

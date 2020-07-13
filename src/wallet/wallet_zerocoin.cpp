@@ -19,6 +19,81 @@
  * Legacy Zerocoin Wallet
  */
 
+bool CWallet::AddDeterministicSeed(const uint256& seed)
+{
+    CWalletDB db(strWalletFile);
+    std::string strErr;
+    uint256 hashSeed = Hash(seed.begin(), seed.end());
+
+    if(IsCrypted()) {
+        if (!IsLocked()) { //if we have password
+
+            CKeyingMaterial kmSeed(seed.begin(), seed.end());
+            std::vector<unsigned char> vchSeedSecret;
+
+
+            //attempt encrypt
+            if (EncryptSecret(vMasterKey, kmSeed, hashSeed, vchSeedSecret)) {
+                //write to wallet with hashSeed as unique key
+                if (db.WriteZXNKSeed(hashSeed, vchSeedSecret)) {
+                    return true;
+                }
+            }
+            strErr = "encrypt seed";
+        }
+        strErr = "save since wallet is locked";
+    } else { //wallet not encrypted
+        if (db.WriteZXNKSeed(hashSeed, ToByteVector(seed))) {
+            return true;
+        }
+        strErr = "save zxnkseed to wallet";
+    }
+    //the use case for this is no password set seed, mint dzXNK,
+
+    return error("s%: Failed to %s\n", __func__, strErr);
+}
+
+bool CWallet::GetDeterministicSeed(const uint256& hashSeed, uint256& seedOut)
+{
+
+    CWalletDB db(strWalletFile);
+    std::string strErr;
+    if (IsCrypted()) {
+        if(!IsLocked()) { //if we have password
+
+            std::vector<unsigned char> vchCryptedSeed;
+            //read encrypted seed
+            if (db.ReadZXNKSeed(hashSeed, vchCryptedSeed)) {
+                uint256 seedRetrieved = uint256S(ReverseEndianString(HexStr(vchCryptedSeed)));
+                //this checks if the hash of the seed we just read matches the hash given, meaning it is not encrypted
+                //the use case for this is when not crypted, seed is set, then password set, the seed not yet crypted in memory
+                if(hashSeed == Hash(seedRetrieved.begin(), seedRetrieved.end())) {
+                    seedOut = seedRetrieved;
+                    return true;
+                }
+
+                CKeyingMaterial kmSeed;
+                //attempt decrypt
+                if (DecryptSecret(vMasterKey, vchCryptedSeed, hashSeed, kmSeed)) {
+                    seedOut = uint256S(ReverseEndianString(HexStr(kmSeed)));
+                    return true;
+                }
+                strErr = "decrypt seed";
+            } else { strErr = "read seed from wallet"; }
+        } else { strErr = "read seed; wallet is locked"; }
+    } else {
+        std::vector<unsigned char> vchSeed;
+        // wallet not crypted
+        if (db.ReadZXNKSeed(hashSeed, vchSeed)) {
+            seedOut = uint256S(ReverseEndianString(HexStr(vchSeed)));
+            return true;
+        }
+        strErr = "read seed from wallet";
+    }
+
+    return error("%s: Failed to %s\n", __func__, strErr);
+}
+
 //- ZC Mints (Only for regtest)
 
 std::string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints, const CCoinControl* coinControl)
@@ -65,7 +140,7 @@ std::string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, std::vector
         return _("Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
     } else {
         //update mints with full transaction hash and then database them
-        CWalletDB walletdb(pwalletMain->strWalletFile);
+        CWalletDB walletdb(strWalletFile);
         for (CDeterministicMint dMint : vDMints) {
             dMint.SetTxHash(wtxNew.GetHash());
             zxnkTracker->Add(dMint, true);
@@ -168,7 +243,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue,
         txNew.vout.push_back(outMint);
 
         //store as CZerocoinMint for later use
-        LogPrint("zero", "%s: new mint %s\n", __func__, dMint.ToString());
+        LogPrint(BCLog::LEGACYZC, "%s: new mint %s\n", __func__, dMint.ToString());
         vDMints.emplace_back(dMint);
     }
 
@@ -243,7 +318,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
     }
 
 
-    CWalletDB walletdb(pwalletMain->strWalletFile);
+    CWalletDB walletdb(strWalletFile);
     if (!CommitTransaction(wtxNew, reserveKey)) {
         LogPrintf("%s: failed to commit\n", __func__);
         nStatus = ZXNK_COMMIT_FAILED;
@@ -252,7 +327,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, CWalletTx& wtxNew, CZerocoinSpendRe
         for (CZerocoinMint mint : vMintsSelected) {
             uint256 hashPubcoin = GetPubCoinHash(mint.GetValue());
             zxnkTracker->SetPubcoinNotUsed(hashPubcoin);
-            pwalletMain->NotifyZerocoinChanged(pwalletMain, mint.GetValue().GetHex(), "New", CT_UPDATED);
+            NotifyZerocoinChanged(this, mint.GetValue().GetHex(), "New", CT_UPDATED);
         }
 
         //erase spends
@@ -395,7 +470,7 @@ bool CWallet::CreateZCPublicSpendTransaction(
     nStatus = ZXNK_TRX_CREATE;
 
     // If not already given pre-selected mints, then select mints from the wallet
-    CWalletDB walletdb(pwalletMain->strWalletFile);
+    CWalletDB walletdb(strWalletFile);
     std::set<CMintMeta> setMints;
     CAmount nValueSelected = 0;
     int nCoinsReturned = 0; // Number of coins returned in change from function below (for debug)
@@ -683,7 +758,7 @@ std::string CWallet::ResetMintZerocoin()
 {
     long updates = 0;
     long deletions = 0;
-    CWalletDB walletdb(pwalletMain->strWalletFile);
+    CWalletDB walletdb(strWalletFile);
 
     std::set<CMintMeta> setMints = zxnkTracker->ListMints(false, false, true);
     std::vector<CMintMeta> vMintsToFind(setMints.begin(), setMints.end());
