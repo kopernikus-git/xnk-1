@@ -185,7 +185,6 @@ public:
         consensus.height_start_BIP65 = 503; 									// Block v5:  82629b7a9978f5c7ea3f70a12db92633a7d2e436711500db28b97efd48b1e527
         consensus.height_start_InvalidUTXOsCheck = 999999999; 					//Start enforcing the invalid UTXO's
         consensus.height_start_MessSignaturesV2 = 530;		  					// height_start_TimeProtoV2
-        consensus.height_start_StakeModifierV3 = 999999999;						// Block V8
         consensus.height_start_StakeModifierNewSelection = 495;
         consensus.height_start_StakeModifierV2 = 501;							// Block v6: consensus.height_last_PoW + 1;
         consensus.height_start_TimeProtoV2 = 530; 								// Block v7: TimeProtocolV2, Blocks V7 and newMessageSignatures
@@ -304,7 +303,6 @@ public:
         consensus.height_start_MessSignaturesV2 = 1347000;      // height_start_TimeProtoV2, Blocks V7 and newMessageSignatures
         consensus.height_start_StakeModifierNewSelection = 51197;
         consensus.height_start_StakeModifierV2 = 1214000;		// Block v6: 
-        consensus.height_start_StakeModifierV3 = 999999999;     // Block V8
         consensus.height_start_TimeProtoV2 = 1347000; 			// Block v7: TimeProtocolV2, Blocks V7 and newMessageSignatures
         consensus.height_start_ZC = 201576;						// Block v4: 
         consensus.height_start_ZC_InvalidSerials = 999999999;
@@ -427,7 +425,6 @@ public:
         consensus.height_start_MessSignaturesV2 = 1;
         consensus.height_start_StakeModifierNewSelection = 0;
         consensus.height_start_StakeModifierV2 = 251;       // start with modifier V2 on regtest
-        consensus.height_start_StakeModifierV3 = 999999999;     // Block V8
         consensus.height_start_TimeProtoV2 = 999999999;
         consensus.height_start_ZC = 300;
         consensus.height_start_ZC_InvalidSerials = 999999999;

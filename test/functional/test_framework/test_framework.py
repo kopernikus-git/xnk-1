@@ -700,8 +700,6 @@ class EncoCoinTestFramework():
             assert_equal(self.nodes[i].getblockcount(), 330)
             if i > 0:
                 assert_equal(self.nodes[i].getbestblockhash(), best_block)
-        # Verify version of last block
-        assert_equal(self.nodes[0].getblock(best_block, True)["version"], 8)
 
         # balance is mature pow blocks rewards minus stake inputs (spent)
         w_info = [self.nodes[i].getwalletinfo() for i in range(num_nodes)]
