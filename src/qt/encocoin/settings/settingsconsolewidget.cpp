@@ -267,8 +267,12 @@ SettingsConsoleWidget::SettingsConsoleWidget(EncoCoinGUI* _window, QWidget *pare
     ui->pushButtonCommandOptions->setText(tr("Command Line Options "));
     ui->pushButtonOpenDebug->setText(tr("Open Debug File"));
     setCssBtnSecondary(ui->pushButtonOpenDebug);
+    setCssBtnSecondary(ui->pushButtonClear);
     setCssBtnSecondary(ui->pushButtonCommandOptions);
 
+    setShadow(ui->pushButtonClear);
+    ui->pushButtonClear->setToolTip(tr("Clear history"));
+    connect(ui->pushButtonClear, &QPushButton::clicked, [this]{ clear(false); });
     connect(ui->pushButtonOpenDebug, &QPushButton::clicked, [this](){
         if(!GUIUtil::openDebugLogfile()){
             inform(tr("Cannot open debug file.\nVerify that you have installed a predetermined text editor."));
@@ -388,10 +392,12 @@ static QString categoryClass(int category)
     }
 }
 
-void SettingsConsoleWidget::clear(){
+void SettingsConsoleWidget::clear(bool clearHistory){
     ui->messagesWidget->clear();
-    history.clear();
-    historyPtr = 0;
+    if (clearHistory) {
+        history.clear();
+        historyPtr = 0;
+    }
     ui->lineEdit->clear();
     ui->lineEdit->setFocus();
 
