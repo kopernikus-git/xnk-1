@@ -596,7 +596,7 @@ bool EncoCoinGUI::addWallet(const QString& name, WalletModel* walletModel)
     // Connect actions..
     connect(privacyWidget, &PrivacyWidget::message, this, &EncoCoinGUI::message);
     connect(masterNodesWidget, &MasterNodesWidget::message, this, &EncoCoinGUI::message);
-    connect(coldStakingWidget, &MasterNodesWidget::message, this, &EncoCoinGUI::message);
+    connect(coldStakingWidget, &ColdStakingWidget::message, this, this, &EncoCoinGUI::message);
     connect(topBar, &TopBar::message, this, &EncoCoinGUI::message);
     connect(sendWidget, &SendWidget::message,this, &EncoCoinGUI::message);
     connect(receiveWidget, &ReceiveWidget::message,this, &EncoCoinGUI::message);
