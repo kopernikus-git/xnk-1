@@ -49,6 +49,7 @@ public:
         ZeromintAddresses,   // bool
         ZeromintPercentage,  // int
         ZeromintPrefDenom,   // int
+        HideCharts,          // bool
         HideZeroBalances,    // bool
         HideOrphans,    // bool
         AnonymizeEncoCoinAmount, //int
@@ -78,6 +79,7 @@ public:
     void setCustomFeeValue(const CAmount& value);
 
     /* Explicit getters */
+    bool isHideCharts() { return fHideCharts; }
     bool getMinimizeToTray() { return fMinimizeToTray; }
     bool getMinimizeOnClose() { return fMinimizeOnClose; }
     int getDisplayUnit() { return nDisplayUnit; }
@@ -117,6 +119,7 @@ private:
     QString strThirdPartyTxUrls;
     bool fCoinControlFeatures;
     bool showColdStakingScreen;
+    bool fHideCharts;
     bool fHideZeroBalances;
     bool fHideOrphans;
     /* settings that were overriden by command-line */
@@ -134,6 +137,7 @@ Q_SIGNALS:
     void anonymizeEncoCoinAmountChanged(int);
     void coinControlFeaturesChanged(bool);
     void showHideColdStakingScreen(bool);
+    void hideChartsChanged(bool);
     void hideZeroBalancesChanged(bool);
     void hideOrphansChanged(bool);
 };

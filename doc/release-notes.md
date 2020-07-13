@@ -172,6 +172,10 @@ Addresses in the dropdown of the "Send Transaction" and "Send Delegation" widget
 **Custom Fee**: The custom fee selected when sending a transaction is now saved in the wallet database and persisted across multiple sends and wallet's restarts
 
 
+**Staking Charts**: can now be hidden at startup (with a flag `--hidecharts`) or at runtime with a checkbox in settings --> options --> display
+
+
+
 ### RPC/REST
 
 ### Wallet
