@@ -29,7 +29,6 @@ QT_FORMS_UI = \
   qt/encocoin/forms/topbar.ui \
   qt/encocoin/forms/txrow.ui \
   qt/encocoin/forms/dashboardwidget.ui \
-  qt/encocoin/forms/coincontrolxnkwidget.ui \
   qt/encocoin/forms/addresslabelrow.ui \
   qt/encocoin/forms/contactdropdownrow.ui \
   qt/encocoin/forms/mninfodialog.ui \
@@ -120,7 +119,6 @@ QT_MOC_CPP = \
   qt/encocoin/moc_topbar.cpp \
   qt/encocoin/moc_txrow.cpp \
   qt/encocoin/moc_dashboardwidget.cpp \
-  qt/encocoin/moc_coincontrolxnkwidget.cpp \
   qt/encocoin/moc_addresslabelrow.cpp \
   qt/encocoin/moc_contactdropdownrow.cpp \
   qt/encocoin/moc_mninfodialog.cpp \
@@ -248,7 +246,6 @@ BITCOIN_QT_H = \
   qt/encocoin/addressholder.h \
   qt/encocoin/addressfilterproxymodel.h \
   qt/encocoin/dashboardwidget.h \
-  qt/encocoin/coincontrolxnkwidget.h \
   qt/encocoin/addresslabelrow.h \
   qt/encocoin/contactdropdownrow.h \
   qt/encocoin/mninfodialog.h \
@@ -633,7 +630,6 @@ BITCOIN_QT_WALLET_CPP = \
   qt/encocoin/addressholder.cpp \
   qt/encocoin/addressfilterproxymodel.cpp \
   qt/encocoin/dashboardwidget.cpp \
-  qt/encocoin/coincontrolxnkwidget.cpp \
   qt/encocoin/addresslabelrow.cpp \
   qt/encocoin/contactdropdownrow.cpp \
   qt/encocoin/contactsdropdown.cpp \

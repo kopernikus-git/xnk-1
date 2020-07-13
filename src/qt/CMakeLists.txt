@@ -133,7 +133,6 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/txrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/addressfilterproxymodel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/dashboardwidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/coincontrolxnkwidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/addresslabelrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/contactdropdownrow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/encocoin/contactsdropdown.cpp
