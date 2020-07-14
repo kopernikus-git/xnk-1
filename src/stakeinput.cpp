@@ -45,6 +45,8 @@ bool CXnkStake::SetPrevout(CTransaction txPrev, unsigned int n)
 
 bool CXnkStake::GetTxFrom(CTransaction& tx) const
 {
+    if (txFrom.IsNull())
+        return false;
     tx = txFrom;
     return true;
 }
