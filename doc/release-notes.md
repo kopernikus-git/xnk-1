@@ -178,6 +178,8 @@ Addresses in the dropdown of the "Send Transaction" and "Send Delegation" widget
 **Staking Charts**: can now be hidden at startup (with a flag `--hidecharts`) or at runtime with a checkbox in settings --> options --> display
 
 
+**Include delegations in send**: The send and cold-staking page present a checkbox to make the automatic input selection algorithm include delegated (P2CS) utxos if needed. The option is unchecked by default.
+
 
 ### RPC/REST
 

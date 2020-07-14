@@ -632,7 +632,7 @@ bool DashboardWidget::refreshChart()
 void DashboardWidget::onChartRefreshed() 
 {
     if (chart) {
-        if  series) {
+        if  (series) {
             series->clear();
             series->detachAxis(axisX);
             series->detachAxis(axisY);
