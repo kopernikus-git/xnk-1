@@ -71,15 +71,8 @@ EncoCoinGUI::EncoCoinGUI(const NetworkStyle* networkStyle, QWidget* parent) :
     windowTitle += " " + networkStyle->getTitleAddText();
     setWindowTitle(windowTitle);
 
-#ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getAppIcon());
     setWindowIcon(networkStyle->getAppIcon());
-#else
-    MacDockIconHandler::instance()->setIcon(networkStyle->getAppIcon());
-#endif
-
-
-
 
 #ifdef ENABLE_WALLET
     // Create wallet frame
@@ -213,7 +206,6 @@ void EncoCoinGUI::connectActions() {
     connect(settingsWidget, &SettingsWidget::execDialog, this, &EncoCoinGUI::execDialog);
 }
 
-
 void EncoCoinGUI::createTrayIcon(const NetworkStyle* networkStyle) {
 #ifndef Q_OS_MAC
     trayIcon = new QSystemTrayIcon(this);
@@ -238,13 +230,11 @@ EncoCoinGUI::~EncoCoinGUI() {
 #endif
 }
 
-
 /** Get restart command-line parameters and request restart */
 void EncoCoinGUI::handleRestart(QStringList args){
     if (!ShutdownRequested())
         Q_EMIT requestedRestart(args);
 }
-
 
 void EncoCoinGUI::setClientModel(ClientModel* clientModel) {
     this->clientModel = clientModel;
@@ -286,7 +276,7 @@ void EncoCoinGUI::setClientModel(ClientModel* clientModel) {
 
 void EncoCoinGUI::createTrayIconMenu() {
 #ifndef Q_OS_MAC
-    // return if trayIcon is unset (only on non-Mac OSes)
+    // return if trayIcon is unset (only on non-macOSes)
     if (!trayIcon)
         return;
 
@@ -295,10 +285,12 @@ void EncoCoinGUI::createTrayIconMenu() {
 
     connect(trayIcon, &QSystemTrayIcon::activated, this, &EncoCoinGUI::trayIconActivated);
 #else
-    // Note: On Mac, the dock icon is used to provide the tray's functionality.
+    // Note: On macOS, the Dock icon is used to provide the tray's functionality.
     MacDockIconHandler* dockIconHandler = MacDockIconHandler::instance();
-    dockIconHandler->setMainWindow((QMainWindow*)this);
-    trayIconMenu = dockIconHandler->dockMenu();
+    connect(dockIconHandler, &MacDockIconHandler::dockIconClicked, this, &PIVXGUI::macosDockIconActivated);
+
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->setAsDockMenu();
 #endif
 
     // Configuration of the tray icon (or dock icon) icon menu
@@ -319,6 +311,12 @@ void EncoCoinGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
         toggleHidden();
     }
 }
+#else
+void PIVXGUI::macosDockIconActivated()
+ {
+     show();
+     activateWindow();
+ }
 #endif
 
 void EncoCoinGUI::changeEvent(QEvent* e)
@@ -441,18 +439,11 @@ bool EncoCoinGUI::openStandardDialog(QString title, QString body, QString okBtn,
 void EncoCoinGUI::showNormalIfMinimized(bool fToggleHidden) {
     if (!clientModel)
         return;
-    // activateWindow() (sometimes) helps with keyboard focus on Windows
-    if (isHidden()) {
-        show();
-        activateWindow();
-    } else if (isMinimized()) {
-        showNormal();
-        activateWindow();
-    } else if (GUIUtil::isObscured(this)) {
-        raise();
-        activateWindow();
-    } else if (fToggleHidden)
+    if (!isHidden() && !isMinimized() && !GUIUtil::isObscured(this) && fToggleHidden) {
         hide();
+    } else {
+        GUIUtil::bringToFront(this);
+    }
 }
 
 void EncoCoinGUI::toggleHidden() {
