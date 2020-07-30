@@ -9,6 +9,7 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "httpserver.h"
+#include "consensus/zerocoin_verify.h"
 #include "init.h"
 #include "main.h"
 #include "masternode-sync.h"
@@ -145,13 +146,16 @@ UniValue getinfo(const UniValue& params, bool fHelp)
         return obj;
     }
 
-    obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
+    obj.push_back(Pair("moneysupply",ValueFromAmount(nMoneySupply)));
 /*
     UniValue zxnkObj(UniValue::VOBJ);
     for (auto denom : libzerocoin::zerocoinDenomList) {
-        zxnkObj.push_back(Pair(std::to_string(denom), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom*COIN))));
+        if (mapZerocoinSupply.empty())
+            zxnkObj.push_back(Pair(std::to_string(denom), ValueFromAmount(0)));
+        else
+            zxnkObj.push_back(Pair(std::to_string(denom), ValueFromAmount(mapZerocoinSupply.at(denom) * (denom*COIN))));
     }
-    zxnkObj.push_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
+    zxnkObj.push_back(Pair("total", ValueFromAmount(GetZerocoinSupply())));
     obj.push_back(Pair("zXNKsupply", zxnkObj));
 */
 #ifdef ENABLE_WALLET
@@ -664,13 +668,13 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp)
             "\nResult:\n"
             "{\n"
             "  \"staking_status\": true|false,      (boolean) whether the wallet is staking or not\n"
-            "  \"staking_enabled\": true|false,     (boolean) whether staking is enabled/disabled in pivx.conf\n"
-            "  \"coldstaking_enabled\": true|false, (boolean) whether cold-staking is enabled/disabled in pivx.conf\n"
+            "  \"staking_enabled\": true|false,     (boolean) whether staking is enabled/disabled in encocoin.conf\n"
+            "  \"coldstaking_enabled\": true|false, (boolean) whether cold-staking is enabled/disabled in encocoin.conf\n"
             "  \"haveconnections\": true|false,     (boolean) whether network connections are present\n"
             "  \"mnsync\": true|false,              (boolean) whether the required masternode/spork data is synced\n"
             "  \"walletunlocked\": true|false,      (boolean) whether the wallet is unlocked\n"
             "  \"stakeablecoins\": n                (numeric) number of stakeable UTXOs\n"
-            "  \"stakingbalance\": d                (numeric) PIV value of the stakeable coins (minus reserve balance, if any)\n"
+            "  \"stakingbalance\": d                (numeric) XNK value of the stakeable coins (minus reserve balance, if any)\n"
             "  \"stakesplitthreshold\": d           (numeric) value of the current threshold for stake split\n"
             "  \"lastattempt_age\": n               (numeric) seconds since last stake attempt\n"
             "  \"lastattempt_depth\": n             (numeric) depth of the block on top of which the last stake attempt was made\n"

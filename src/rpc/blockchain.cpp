@@ -133,15 +133,6 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
 
-    result.push_back(Pair("moneysupply",ValueFromAmount(blockindex->nMoneySupply)));
-
-    UniValue zxnkObj(UniValue::VOBJ);
-    for (auto denom : libzerocoin::zerocoinDenomList) {
-        zxnkObj.push_back(Pair(std::to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom*COIN))));
-    }
-    zxnkObj.push_back(Pair("total", ValueFromAmount(blockindex->GetZerocoinSupply())));
-    result.push_back(Pair("zXNKsupply", zxnkObj));
-
     //////////
     ////////// Coin stake data ////////////////
     /////////
@@ -496,18 +487,6 @@ UniValue getblock(const UniValue& params, bool fHelp)
             "  \"previousblockhash\" : \"hash\",  (string) The hash of the previous block\n"
             "  \"nextblockhash\" : \"hash\"       (string) The hash of the next block\n"
             "  \"moneysupply\" : \"supply\"       (numeric) The money supply when this block was added to the blockchain\n"
-            "  \"zXNKsupply\" :\n"
-            "  {\n"
-            "     \"1\" : n,            (numeric) supply of 1 zXNK denomination\n"
-            "     \"5\" : n,            (numeric) supply of 5 zXNK denomination\n"
-            "     \"10\" : n,           (numeric) supply of 10 zXNK denomination\n"
-            "     \"50\" : n,           (numeric) supply of 50 zXNK denomination\n"
-            "     \"100\" : n,          (numeric) supply of 100 zXNK denomination\n"
-            "     \"500\" : n,          (numeric) supply of 500 zXNK denomination\n"
-            "     \"1000\" : n,         (numeric) supply of 1000 zXNK denomination\n"
-            "     \"5000\" : n,         (numeric) supply of 5000 zXNK denomination\n"
-            "     \"total\" : n,        (numeric) The total supply of all zXNK denominations\n"
-            "  },\n"
             "  \"stakeModifier\" : \"xxx\",       (string) Proof of Stake modifier\n"
             "  \"hashProofOfStake\" : \"hash\",   (string) Proof of Stake hash\n"
             "  }\n"
@@ -1426,4 +1405,3 @@ UniValue getblockindexstats(const UniValue& params, bool fHelp) {
     return ret;
 
 }
-

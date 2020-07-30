@@ -80,6 +80,7 @@ BlockMap mapBlockIndex;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
 int64_t nTimeBestReceived = 0;
+int64_t nMoneySupply;
 
 // Best block section
 Mutex g_best_block_mutex;
@@ -1621,7 +1622,7 @@ int64_t GetBlockValue(int nHeight)
     }
 
     // Check if we reached the coin max supply.
-    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    //int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     const Consensus::Params& consensus = Params().GetConsensus();
     if (nMoneySupply + nSubsidy >= consensus.nMaxMoneyOut)
         nSubsidy = consensus.nMaxMoneyOut - consensus.nMaxMoneyOut;
@@ -1632,7 +1633,7 @@ int64_t GetBlockValue(int nHeight)
     return nSubsidy;
 }
 
-int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount, bool isZXNKStake)
+int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
 {
     int64_t ret = 0;
         
@@ -2074,6 +2075,8 @@ void DataBaseAccChecksum(CBlockIndex* pindex, bool fWrite)
 
 bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool* pfClean)
 {
+    AssertLockHeld(cs_main);
+
     if (pindex->GetBlockHash() != view.GetBestBlock())
         LogPrintf("%s : pindex=%s view=%s\n", __func__, pindex->GetBlockHash().GetHex(), view.GetBestBlock().GetHex());
     assert(pindex->GetBlockHash() == view.GetBestBlock());
@@ -2085,6 +2088,8 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 
     CBlockUndo blockUndo;
     CDiskBlockPos pos = pindex->GetUndoPos();
+    CAmount nValueOut = 0;
+    CAmount nValueIn = 0;
     if (pos.IsNull())
         return error("DisconnectBlock() : no undo data available");
     if (!blockUndo.ReadFromDisk(pos, pindex->pprev->GetBlockHash()))
@@ -2092,6 +2097,10 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 
     if (blockUndo.vtxundo.size() + 1 != block.vtx.size())
         return error("DisconnectBlock() : block and undo data inconsistent");
+
+    //Track zXNK money supply
+    if (!UpdateZXNKSupplyDisconnect(block, pindex))
+        return error("%s: Failed to calculate new zXNK supply", __func__);
 
     // undo transactions in reverse order
     for (int i = block.vtx.size() - 1; i >= 0; i--) {
@@ -2116,9 +2125,11 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
                                 return error("Failed to parse public spend");
                             }
                             serial = publicSpend.getCoinSerialNumber();
+                            nValueIn += publicSpend.getDenomination() * COIN;
                         } else {
                             libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txin);
                             serial = spend.getCoinSerialNumber();
+                            nValueIn += spend.getDenomination() * COIN;
                         }
 
                         if (!zerocoinDB->EraseCoinSpend(serial))
@@ -2151,6 +2162,8 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
                 }
             }
         }
+
+        nValueOut += tx.GetValueOut();
 
         uint256 hash = tx.GetHash();
 
@@ -2204,7 +2217,12 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
                 coins->vout[out.n] = undo.txout;
             }
         }
+
+        if (!tx.HasZerocoinSpendInputs() && !tx.IsCoinBase() && view.HaveInputs(tx))
+            nValueIn += view.GetValueIn(tx);
     }
+    // track money
+    nMoneySupply -= (nValueOut - nValueIn);
 
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
@@ -2452,20 +2470,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
-    //A one-time event where money supply counts were off and recalculated on a certain block.
-    if (pindex->nHeight == consensus.height_ZC_RecalcAccumulators + 1) {
-        RecalculateXNKSupply(consensus.height_start_ZC);
-    }
-
-    //Track zXNK money supply in the block index
-    if (!UpdateZXNKSupply(block, pindex, fJustCheck))
-        return state.DoS(100, error("%s: Failed to calculate new zXNK supply for block=%s height=%d", __func__,
-                                    block.GetHash().GetHex(), pindex->nHeight), REJECT_INVALID);
-
-    // track money supply and mint amount info
-    CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
-    pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
-    const int64_t nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
+    // track mint amount info
+    const int64_t nMint = (nValueOut - nValueIn) + nFees;
 
     int64_t nTime1 = GetTimeMicros();
     nTimeConnect += nTime1 - nTimeStart;
@@ -2553,6 +2559,29 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     // add this block to the view's block chain
     view.SetBestBlock(pindex->GetBlockHash());
+    // Update zXNK money supply map
+    if (!UpdateZXNKSupplyConnect(block, pindex, fJustCheck)) {
+        return state.DoS(100, error("%s: Failed to calculate new zXNK supply for block=%s height=%d", __func__,
+                                    block.GetHash().GetHex(), pindex->nHeight), REJECT_INVALID);
+    }
+
+    // A one-time event where the zXNK supply was off (due to serial duplication off-chain on main net)
+    if (Params().NetworkID() == CBaseChainParams::MAIN && pindex->nHeight == consensus.height_last_ZC_WrappedSerials + 1
+            && GetZerocoinSupply() != consensus.ZC_WrappedSerialsSupply + GetWrapppedSerialInflationAmount()) {
+        RecalculateXNKSupply(consensus.height_start_ZC, false);
+    }
+
+    // Add fraudulent funds to the supply and remove any recovered funds.
+    if (Params().NetworkID() == CBaseChainParams::MAIN && pindex->nHeight == consensus.height_ZC_RecalcAccumulators) {
+        LogPrintf("%s : Adding fraudulent funds at height_ZC_RecalcAccumulators\n", __func__);
+        const CAmount nInvalidAmountFiltered = 0*COIN;    //Amount of invalid coins filtered through exchanges, that should be considered valid
+        nMoneySupply += nInvalidAmountFiltered;
+        CAmount nLocked = GetInvalidUTXOValue();
+        nMoneySupply -= nLocked;
+    }
+
+    // Update XNK money supply
+    nMoneySupply += (nValueOut - nValueIn);
 
     int64_t nTime3 = GetTimeMicros();
     nTimeIndex += nTime3 - nTime2;
@@ -2628,10 +2657,20 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
                 if (!pblocktree->WriteBatchSync(vFiles, nLastBlockFile, vBlocks)) {
                     return AbortNode(state, "Files to write to block index database");
                 }
+                // Flush zerocoin supply
+                if (!mapZerocoinSupply.empty() && !zerocoinDB->WriteZCSupply(mapZerocoinSupply)) {
+                    return AbortNode(state, "Failed to write zerocoin supply to DB");
+                }
+                // Flush money supply
+                if (!pblocktree->WriteMoneySupply(nMoneySupply)) {
+                    return AbortNode(state, "Failed to write money supply to DB");
+                }
             }
             // Finally flush the chainstate (which may refer to block index entries).
-            if (!pcoinsTip->Flush())
+            if (!pcoinsTip->Flush()) {
                 return AbortNode(state, "Failed to write to coin database");
+			}
+
             // Update best block in wallet (so we can detect restored wallets).
             if (mode != FLUSH_STATE_IF_NEEDED) {
                 GetMainSignals().SetBestChain(chainActive.GetLocator());
@@ -2865,7 +2904,6 @@ void ReprocessBlocks(int nBlocks)
 
 /*
     DisconnectBlockAndInputs
-
     Remove conflicting blocks for successful SwiftX transaction locks
     This should be very rare (Probably will never happen)
 */

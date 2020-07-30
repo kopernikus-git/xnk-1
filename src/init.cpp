@@ -1492,48 +1492,64 @@ bool AppInit2()
                 invalid_out::LoadOutpoints();
                 invalid_out::LoadSerials();
 
-                // Drop all information from the zerocoinDB and repopulate
-                if (GetBoolArg("-reindexzerocoin", false)) {
-                    if (chainActive.Height() > consensus.height_start_ZC) {
-                        uiInterface.InitMessage(_("Reindexing zerocoin database..."));
-                        std::string strError = ReindexZerocoinDB();
-                        if (strError != "") {
-                            strLoadError = strError;
-                            break;
+                bool fReindexZerocoin = GetBoolArg("-reindexzerocoin", false);
+                bool fReindexMoneySupply = GetBoolArg("-reindexmoneysupply", false);
+
+                int chainHeight;
+                {
+                    LOCK(cs_main);
+                    chainHeight = chainActive.Height();
+
+                    // initialize XNK and zXNK supply to 0
+                    mapZerocoinSupply.clear();
+                    for (auto& denom : libzerocoin::zerocoinDenomList) mapZerocoinSupply.insert(std::make_pair(denom, 0));
+                    nMoneySupply = 0;
+
+                    // Load XNK and zXNK supply from DB
+                    if (chainHeight >= 0) {
+                        const uint256& tipHash = chainActive[chainHeight]->GetBlockHash();
+                        CLegacyBlockIndex bi;
+
+                        // Load zXNK supply map
+                        if (!fReindexZerocoin && chainHeight >= consensus.height_start_ZC && !zerocoinDB->ReadZCSupply(mapZerocoinSupply)) {
+                            // try first reading legacy block index from DB
+                            if (pblocktree->ReadLegacyBlockIndex(tipHash, bi) && !bi.mapZerocoinSupply.empty()) {
+                                mapZerocoinSupply = bi.mapZerocoinSupply;
+                            } else {
+                                // reindex from disk
+                                fReindexZerocoin = true;
+                            }
+                        }
+
+                        // Load XNK supply amount
+                        if (!fReindexMoneySupply && !pblocktree->ReadMoneySupply(nMoneySupply)) {
+                            // try first reading legacy block index from DB
+                            if (pblocktree->ReadLegacyBlockIndex(tipHash, bi)) {
+                                nMoneySupply = bi.nMoneySupply;
+                            } else {
+                                // reindex from disk
+                                fReindexMoneySupply = true;
+                            }
                         }
                     }
                 }
 
-                // Wrapped serials inflation check
-                bool reindexDueWrappedSerials = false;
-                bool reindexZerocoin = false;
-                int chainHeight = chainActive.Height();
-                if(Params().NetworkID() == CBaseChainParams::MAIN && chainHeight > consensus.height_last_ZC_WrappedSerials) {
-
-                    // Supply needs to be exactly GetSupplyBeforeFakeSerial + GetWrapppedSerialInflationAmount
-                    CBlockIndex* pblockindex = chainActive[consensus.height_last_ZC_WrappedSerials + 1];
-                    CAmount zxnkSupplyCheckpoint = consensus.ZC_WrappedSerialsSupply + GetWrapppedSerialInflationAmount();
-
-                    if (pblockindex->GetZerocoinSupply() < zxnkSupplyCheckpoint) {
-                        // Trigger reindex due wrapping serials
-                        LogPrintf("Current GetZerocoinSupply: %d vs %d\n", pblockindex->GetZerocoinSupply()/COIN , zxnkSupplyCheckpoint/COIN);
-                        reindexDueWrappedSerials = true;
-                    } else if (pblockindex->GetZerocoinSupply() > zxnkSupplyCheckpoint) {
-                        // Trigger global zXNK reindex
-                        reindexZerocoin = true;
-                        LogPrintf("Current GetZerocoinSupply: %d vs %d\n", pblockindex->GetZerocoinSupply()/COIN , zxnkSupplyCheckpoint/COIN);
+                // Drop all information from the zerocoinDB and repopulate
+                if (fReindexZerocoin && chainHeight >= consensus.height_start_ZC) {
+                    LOCK(cs_main);
+                    uiInterface.InitMessage(_("Reindexing zerocoin database..."));
+                    std::string strError = ReindexZerocoinDB();
+                    if (strError != "") {
+                        strLoadError = strError;
+                        break;
                     }
-
                 }
 
-                // Reindex only for wrapped serials inflation.
-                if (reindexDueWrappedSerials)
-                    AddWrappedSerialsInflation();
-
-                // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
-                if (GetBoolArg("-reindexmoneysupply", false) || reindexZerocoin) {
-                    // Recalculate from the zerocoin activation or from scratch.
-                    RecalculateXNKSupply((reindexZerocoin ? consensus.height_start_ZC : 1), false);
+                // Recalculate money supply
+                if (fReindexMoneySupply) {
+                    LOCK(cs_main);
+                    // Skip zxnk if already reindexed
+                    RecalculateXNKSupply(1, fReindexZerocoin);
                 }
 
                 if (!fReindex) {
@@ -1544,7 +1560,7 @@ bool AppInit2()
 
                     {
                         LOCK(cs_main);
-                        CBlockIndex *tip = chainActive[chainActive.Height()];
+                        CBlockIndex *tip = chainActive[chainHeight];
                         RPCNotifyBlockChange(true, tip);
                         if (tip && tip->nTime > GetAdjustedTime() + 2 * 60 * 60) {
                             strLoadError = _("The block database contains a block which appears to be from the future. "
@@ -1950,10 +1966,8 @@ bool AppInit2()
     LogPrintf("Budget Mode %s\n", strBudgetMode.c_str());
 
     /* Denominations
-
        A note about convertability. Within Obfuscation pools, each denomination
        is convertable to another.
-
        For example:
        1XNK+1000 == (.1XNK+100)*10
        10XNK+10000 == (1XNK+1000)*10
