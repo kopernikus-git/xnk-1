@@ -4,7 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #include "qt/encocoin/topbar.h"
 #include "qt/encocoin/forms/ui_topbar.h"
-#include <QPixmap>
 #include "qt/encocoin/lockunlock.h"
 #include "qt/encocoin/qtutils.h"
 #include "qt/encocoin/receivedialog.h"
@@ -17,10 +16,14 @@
 #include "qt/guiutil.h"
 #include "optionsmodel.h"
 #include "qt/platformstyle.h"
-#include "wallet/wallet.h"
 #include "walletmodel.h"
 #include "addresstablemodel.h"
 #include "guiinterface.h"
+
+#include "masternode-sync.h"
+#include "wallet/wallet.h"
+
+#include <QPixmap>
 
 #define REQUEST_UPGRADE_WALLET 1
 

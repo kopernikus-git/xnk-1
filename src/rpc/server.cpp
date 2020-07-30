@@ -390,7 +390,6 @@ static const CRPCCommand vRPCCommands[] =
         {"masternodes", "checkbudgets", &checkbudgets, true, true, false},
         {"masternodes", "mnsync", &mnsync, true, true, false},
         {"masternodes", "spork", &spork, true, true, false},
-        {"masternodes", "getpoolinfo", &getpoolinfo, true, true, false},
         {"masternodes", "getcollateral", &getcollateral, true, true, false},
 
 #ifdef ENABLE_WALLET

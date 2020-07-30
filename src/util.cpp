@@ -100,8 +100,6 @@ int nSwiftTXDepth = 5;
 /** Spork enforcement enabled time */
 int64_t enforceMasternodePaymentsTime = 4085657524;
 bool fSucessfullyLoaded = false;
-/** All denominations used by obfuscation */
-std::vector<int64_t> obfuScationDenominations;
 std::string strBudgetMode = "";
 
 std::map<std::string, std::string> mapArgs;
