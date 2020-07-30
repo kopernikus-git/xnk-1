@@ -267,7 +267,7 @@ void MasterNodesWidget::onStartAllClicked(int type)
     WalletModel::UnlockContext ctx(walletModel->requestUnlock());
     if (!ctx.isValid()) {
         // Unlock wallet was cancelled
-        inform(tr("Cannot perform Mastenodes start, wallet locked"));
+        inform(tr("Cannot perform Masternodes start, wallet locked"));
         return;
     }
     if (!Params().IsRegTestNet() && !checkMNsNetwork()) return;     // skip on RegNet: so we can test even if tier two not synced
@@ -277,7 +277,7 @@ void MasterNodesWidget::onStartAllClicked(int type)
         isLoading = true;
         if (!execute(type)) {
             isLoading = false;
-            inform(tr("Cannot perform Mastenodes start"));
+            inform(tr("Cannot perform Masternodes start"));
         }
     }
 }
@@ -340,7 +340,7 @@ void MasterNodesWidget::onInfoMNClicked()
     WalletModel::UnlockContext ctx(walletModel->requestUnlock());
     if (!ctx.isValid()) {
         // Unlock wallet was cancelled
-        inform(tr("Cannot show Mastenode information, wallet locked"));
+        inform(tr("Cannot show Masternode information, wallet locked"));
         return;
     }
     showHideOp(true);
@@ -481,7 +481,7 @@ void MasterNodesWidget::onCreateMNClicked()
     WalletModel::UnlockContext ctx(walletModel->requestUnlock());
     if (!ctx.isValid()) {
         // Unlock wallet was cancelled
-        inform(tr("Cannot create Mastenode controller, wallet locked"));
+        inform(tr("Cannot create Masternode controller, wallet locked"));
         return;
     }
 
