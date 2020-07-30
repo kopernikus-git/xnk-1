@@ -1,7 +1,7 @@
-// Copyright (c) 2019-2020 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef TOPBAR_H
 #define TOPBAR_H
 
@@ -81,9 +81,6 @@ private:
     int nDisplayUnit = -1;
     QTimer* timerStakingIcon = nullptr;
     bool isInitializing = true;
-
-    // pointer to global unlock context (for multithread unlock/relock)
-    WalletModel::UnlockContext* pctx = nullptr;
 
     void updateTorIcon();
 };

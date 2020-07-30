@@ -1,13 +1,13 @@
-// Copyright (c) 2019-2020 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "qt/encocoin/masternodeswidget.h"
 #include "qt/encocoin/forms/ui_masternodeswidget.h"
+
 #include "qt/encocoin/qtutils.h"
 #include "qt/encocoin/mnrow.h"
 #include "qt/encocoin/mninfodialog.h"
-
 #include "qt/encocoin/masternodewizarddialog.h"
 
 #include "activemasternode.h"
@@ -20,7 +20,6 @@
 #include "masternodeman.h"
 #include "sync.h"
 #include "wallet/wallet.h"
-#include "walletmodel.h"
 #include "askpassphrasedialog.h"
 #include "util.h"
 #include "qt/encocoin/optionbutton.h"
@@ -264,18 +263,18 @@ bool MasterNodesWidget::startMN(CMasternodeConfig::CMasternodeEntry mne, std::st
 
 void MasterNodesWidget::onStartAllClicked(int type)
 {
-    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
-    if (!ctx.isValid()) {
-        // Unlock wallet was cancelled
-        inform(tr("Cannot perform Masternodes start, wallet locked"));
-        return;
-    }
     if (!Params().IsRegTestNet() && !checkMNsNetwork()) return;     // skip on RegNet: so we can test even if tier two not synced
+
     if (isLoading) {
         inform(tr("Background task is being executed, please wait"));
     } else {
+        std::unique_ptr<WalletModel::UnlockContext> pctx = MakeUnique<WalletModel::UnlockContext>(walletModel->requestUnlock());
+        if (!pctx->isValid()) {
+            warn(tr("Start ALL masternodes failed"), tr("Wallet unlock cancelled"));
+            return;
+        }
         isLoading = true;
-        if (!execute(type)) {
+        if (!execute(type, std::move(pctx))) {
             isLoading = false;
             inform(tr("Cannot perform Masternodes start"));
         }

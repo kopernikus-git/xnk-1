@@ -1,7 +1,7 @@
-// Copyright (c) 2019 The EncoCoin developers
+// Copyright (c) 2019-2020 The PIVX developers
+// Copyright (c) 2020 The EncoCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef PWIDGET_H
 #define PWIDGET_H
 
@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QString>
 #include "qt/encocoin/prunnable.h"
+#include "walletmodel.h"
 
 class EncoCoinGUI;
 class ClientModel;
@@ -63,7 +64,7 @@ protected:
     virtual void loadWalletModel();
 
     void showHideOp(bool show);
-    bool execute(int type);
+    bool execute(int type, std::unique_ptr<WalletModel::UnlockContext> pctx = nullptr);
     void warn(const QString& title, const QString& message);
     bool ask(const QString& title, const QString& message);
     void showDialog(QDialog *dialog, int xDiv = 3, int yDiv = 5);
