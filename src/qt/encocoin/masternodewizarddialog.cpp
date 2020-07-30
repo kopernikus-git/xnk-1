@@ -4,15 +4,20 @@
 
 #include "qt/encocoin/masternodewizarddialog.h"
 #include "qt/encocoin/forms/ui_masternodewizarddialog.h"
-#include "qt/encocoin/qtutils.h"
+
+#include "activemasternode.h"
 #include "optionsmodel.h"
 #include "collateral.h"
 #include "pairresult.h"
-#include "activemasternode.h"
+#include "qt/encocoin/mnmodel.h"
 #include "qt/encocoin/guitransactionsutils.h"
+#include "qt/encocoin/qtutils.h"
+
 #include <QFile>
 #include <QIntValidator>
 #include <QHostAddress>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 MasterNodeWizardDialog::MasterNodeWizardDialog(WalletModel *model, QWidget *parent) :
     QDialog(parent),
@@ -51,7 +56,9 @@ MasterNodeWizardDialog::MasterNodeWizardDialog(WalletModel *model, QWidget *pare
 
     ui->lineEditName->setPlaceholderText(tr("e.g user_masternode"));
     initCssEditLine(ui->lineEditName);
-    ui->lineEditName->setValidator(new QRegExpValidator(QRegExp("^[A-Za-z0-9]+"), ui->lineEditName));
+    // MN alias must not contain spaces or "#" character
+    QRegularExpression rx("^(?:(?![\\#\\s]).)*");
+    ui->lineEditName->setValidator(new QRegularExpressionValidator(rx, ui->lineEditName));
 
     // Frame 4
     setCssProperty(ui->labelTitle4, "text-title-dialog");
@@ -63,12 +70,10 @@ MasterNodeWizardDialog::MasterNodeWizardDialog(WalletModel *model, QWidget *pare
     initCssEditLine(ui->lineEditIpAddress);
     initCssEditLine(ui->lineEditPort);
     ui->stackedWidget->setCurrentIndex(pos);
-    ui->lineEditPort->setValidator(new QIntValidator(0, 9999999, ui->lineEditPort));
+    ui->lineEditPort->setEnabled(false);    // use default port number
     if (walletModel->isRegTestNetwork()) {
-        ui->lineEditPort->setEnabled(false);
         ui->lineEditPort->setText("51476");
     } else if (walletModel->isTestNetwork()) {
-        ui->lineEditPort->setEnabled(false);
         ui->lineEditPort->setText("51474");
     } else {
         ui->lineEditPort->setText("43013");
@@ -181,12 +186,11 @@ bool MasterNodeWizardDialog::createMN()
             returnStr = tr("IP or port cannot be empty");
             return false;
         }
-        // TODO: Validate IP address..
-        int portInt = portStr.toInt();
-        if (portInt <= 0 && portInt > 999999) {
-            returnStr = tr("Invalid port number");
+        if (!MNModel::validateMNIP(addressStr)) {
+            returnStr = tr("Invalid IP address");
             return false;
         }
+
         // ip + port
         std::string ipAddress = addressStr.toStdString();
         std::string port = portStr.toStdString();
