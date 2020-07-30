@@ -4,15 +4,6 @@
 
 #include "qt/encocoin/settings/settingswidget.h"
 #include "qt/encocoin/settings/forms/ui_settingswidget.h"
-#include "qt/encocoin/settings/settingsbackupwallet.h"
-#include "qt/encocoin/settings/settingsbittoolwidget.h"
-#include "qt/encocoin/settings/settingswalletrepairwidget.h"
-#include "qt/encocoin/settings/settingswalletoptionswidget.h"
-#include "qt/encocoin/settings/settingsmainoptionswidget.h"
-#include "qt/encocoin/settings/settingsdisplayoptionswidget.h"
-#include "qt/encocoin/settings/settingsmultisendwidget.h"
-#include "qt/encocoin/settings/settingsinformationwidget.h"
-#include "qt/encocoin/settings/settingsconsolewidget.h"
 #include "qt/encocoin/qtutils.h"
 #include "qt/encocoin/defaultdialog.h"
 #include "optionsmodel.h"
@@ -84,6 +75,9 @@ SettingsWidget::SettingsWidget(EncoCoinGUI* parent) :
         ui->pushButtonTools2,
         ui->pushButtonTools5,
     };
+
+    /* disable multisend for now */
+    ui->pushButtonFile3->setVisible(false);
 
     menus.insert(ui->pushButtonFile, ui->fileButtonsWidget);
     menus.insert(ui->pushButtonConfiguration, ui->configurationButtonsWidget);
