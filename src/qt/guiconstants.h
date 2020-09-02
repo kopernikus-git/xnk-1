@@ -50,11 +50,8 @@ static const int MAX_URI_LENGTH = 255;
 /* QRCodeDialog -- size of exported QR Code image */
 #define EXPORT_IMAGE_SIZE 256
 
-/* Number of frames in spinner animation */
-#define SPINNER_FRAMES 35
-
 #define QAPP_ORG_NAME "EncoCoin"
-#define QAPP_ORG_DOMAIN "encocoin.org"
+#define QAPP_ORG_DOMAIN "encocoin.net"
 #define QAPP_APP_NAME_DEFAULT "EncoCoin-Qt"
 #define QAPP_APP_NAME_TESTNET "EncoCoin-Qt-testnet"
 
