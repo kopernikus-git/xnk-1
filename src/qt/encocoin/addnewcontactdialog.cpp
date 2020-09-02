@@ -2,35 +2,71 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef ADDNEWCONTACTDIALOG_H
-#define ADDNEWCONTACTDIALOG_H
+#include "qt/encocoin/addnewcontactdialog.h"
+#include "qt/encocoin/forms/ui_addnewcontactdialog.h"
+#include "qt/encocoin/qtutils.h"
 
-#include "qt/encocoin/focuseddialog.h"
+AddNewContactDialog::AddNewContactDialog(QWidget *parent) :
+    FocusedDialog(parent),
+    ui(new Ui::AddNewContactDialog)
+{
+    ui->setupUi(this);
 
-namespace Ui {
-class AddNewContactDialog;
+    // Stylesheet
+    this->setStyleSheet(parent->styleSheet());
+    ui->frame->setProperty("cssClass", "container-dialog");
+
+    // Title
+    ui->labelTitle->setProperty("cssClass", "text-title-dialog");
+
+    // Description
+    ui->labelMessage->setProperty("cssClass", "text-main-grey");
+
+    // Address
+    initCssEditLine(ui->lineEditName, true);
+
+    // Buttons
+    ui->btnEsc->setText("");
+    ui->btnEsc->setProperty("cssClass", "ic-close");
+    ui->btnCancel->setProperty("cssClass", "btn-dialog-cancel");
+    ui->btnOk->setProperty("cssClass", "btn-primary");
+
+    connect(ui->btnEsc, &QPushButton::clicked, this, &AddNewContactDialog::close);
+    connect(ui->btnCancel, &QPushButton::clicked, this, &AddNewContactDialog::close);
+    connect(ui->btnOk, &QPushButton::clicked, this, &AddNewContactDialog::accept);
 }
 
-class AddNewContactDialog : public FocusedDialog
+void AddNewContactDialog::setTexts(QString title, const char* message) {
+    ui->labelTitle->setText(title);
+    this->message = message;
+}
+
+void AddNewContactDialog::setData(QString address, QString label){
+    ui->labelMessage->setText(
+            (
+                    !message ?
+            tr("Edit label for the selected address:\n%1").arg(address.toUtf8().constData()) :
+            tr(message).arg(address.toUtf8().constData())
+            )
+    );
+    if (!label.isEmpty()) ui->lineEditName->setText(label);
+}
+
+void AddNewContactDialog::showEvent(QShowEvent *event)
 {
-    Q_OBJECT
+    if (ui->lineEditName) ui->lineEditName->setFocus();
+}
 
-public:
-    explicit AddNewContactDialog(QWidget *parent = nullptr);
-    ~AddNewContactDialog();
+void AddNewContactDialog::accept() {
+    this->res = true;
+    QDialog::accept();
+}
 
-    void setTexts(QString title, const char* message = nullptr);
-    void setData(QString address, QString label);
-    void showEvent(QShowEvent *event) override;
-    QString getLabel();
+QString AddNewContactDialog::getLabel(){
+    return ui->lineEditName->text();
+}
 
-    bool res = false;
-
-public Q_SLOTS:
-    void accept() override;
-private:
-    Ui::AddNewContactDialog *ui;
-    const char* message = nullptr;
-};
-
-#endif // ADDNEWCONTACTDIALOG_H
+AddNewContactDialog::~AddNewContactDialog()
+{
+    delete ui;
+}
