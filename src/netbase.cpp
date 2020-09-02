@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX developers
-// Copyright (c) 2020 	   The EncoCoin developers
+// Copyright (c) 2017-2020	The PIVX developers
+// Copyright (c) 2020		The EncoCoin developers (by Kopernikus-dev)
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifdef HAVE_CONFIG_H
@@ -641,10 +641,10 @@ bool ConnectSocketByName(CService& addr, SOCKET& hSocketRet, const char* pszDest
     proxyType nameProxy;
     GetNameProxy(nameProxy);
 
-    CService addrResolved;
-    if (Lookup(strDest.c_str(), addrResolved, port, fNameLookup && !HaveNameProxy())) {
-        if (addrResolved.IsValid()) {
-            addr = addrResolved;
+    std::vector<CService> addrResolved;
+    if (Lookup(strDest.c_str(), addrResolved, port, fNameLookup && !HaveNameProxy(), 256)) {
+        if (addrResolved.size() > 0) {
+            addr = addrResolved[GetRand(addrResolved.size())];
             return ConnectSocket(addr, hSocketRet, nTimeout);
         }
     }
