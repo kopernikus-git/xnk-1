@@ -61,6 +61,24 @@ public:
 
     bool GetStats(CCoinsStats& stats) const { return false; }
 };
+
+class CCoinsViewCacheTest : public CCoinsViewCache
+{
+public:
+    CCoinsViewCacheTest(CCoinsView* base) : CCoinsViewCache(base) {}
+
+    void SelfTest() const
+    {
+        // Manually recompute the dynamic usage of the whole data, and compare it.
+        size_t ret = memusage::DynamicUsage(cacheCoins);
+        for (CCoinsMap::iterator it = cacheCoins.begin(); it != cacheCoins.end(); it++) {
+            ret += memusage::DynamicUsage(it->second.coins);
+        }
+        BOOST_CHECK_EQUAL(memusage::DynamicUsage(*this), ret);
+    }
+
+};
+
 }
 
 BOOST_FIXTURE_TEST_SUITE(coins_tests, BasicTestingSetup)
