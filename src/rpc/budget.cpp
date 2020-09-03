@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2020	   The EncoCoin developers
+// Copyright (c) 2015-2020	The PIVX developers
+// Copyright (c) 2020		The EncoCoin developers (by Kopernikus-dev)
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #include "activemasternode.h"
@@ -155,7 +155,9 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     // make our change address
     CReserveKey reservekey(pwalletMain);
     //send the tx to the network
-    pwalletMain->CommitTransaction(wtx, reservekey, useIX ? NetMsgType::IX : NetMsgType::TX);
+    const CWallet::CommitResult& res = pwalletMain->CommitTransaction(wtx, reservekey, useIX ? NetMsgType::IX : NetMsgType::TX);
+    if (res.status != CWallet::CommitStatus::OK)
+        throw JSONRPCError(RPC_WALLET_ERROR, res.ToString());
 
     return wtx.GetHash().ToString();
 }
